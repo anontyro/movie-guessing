@@ -5,9 +5,13 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MoviesModule } from './movies/movies.module';
 import { ConfigModule } from '@nestjs/config';
+import appConfig from './config/app.config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      load: [appConfig],
+    }),
     ServeStaticModule.forRoot({
       rootPath: join('./', 'dist'),
       exclude: ['/api*'],
