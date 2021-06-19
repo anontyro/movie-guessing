@@ -1,0 +1,43 @@
+import { Movie } from '../entities/movie.entity';
+
+const rawTestData: Movie[] = [
+  {
+    Id: '1',
+    ImbdId: 'tt1037705',
+    Name: 'The Book Of Eli',
+    ReleaseYear: '2010',
+    ImdbUrl: 'https://www.imdb.com/title/tt1037705/',
+    HasBeenGuessed: '1',
+    Guesser: 'Alex Barke',
+    DateGuessed: '2021-06-17',
+    CreatedAt: '2021-06-03',
+    Type: '',
+    Ignored: '0',
+  },
+  {
+    Id: '2',
+    ImbdId: 'tt5848272',
+    Name: 'Ralph Break The Internet',
+    ReleaseYear: '2018',
+    ImdbUrl: 'https://www.imdb.com/title/tt5848272',
+    HasBeenGuessed: '1',
+    Guesser: 'April Shar',
+    DateGuessed: '2021-06-02',
+    CreatedAt: '2021-06-03',
+    Type: '',
+    Ignored: '0',
+  },
+  {
+    Id: '199',
+    ImbdId: '',
+    Name: 'ScarFace',
+    ReleaseYear: '',
+    ImdbUrl: '',
+    HasBeenGuessed: '0',
+    Guesser: '',
+    DateGuessed: '',
+    CreatedAt: '',
+    Type: '',
+    Ignored: '0',
+  },
+];

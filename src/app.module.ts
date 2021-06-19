@@ -6,6 +6,7 @@ import { join } from 'path';
 import { MoviesModule } from './movies/movies.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { HttpFetchService } from './common/http-fetch/http-fetch.service';
 import appConfig from './config/app.config';
 
 @Module({
@@ -24,6 +25,6 @@ import appConfig from './config/app.config';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, HttpFetchService],
 })
 export class AppModule {}
