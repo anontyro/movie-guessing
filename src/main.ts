@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -7,6 +8,7 @@ async function bootstrap() {
   app.enableCors();
   app.setGlobalPrefix('api');
   app.setViewEngine('html');
+  app.useStaticAssets(join(__dirname, '..', 'public'));
 
   await app.listen(3000);
 }
