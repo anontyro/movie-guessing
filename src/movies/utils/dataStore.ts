@@ -1,16 +1,12 @@
 import { MovieUpdateDto } from '../dtos/movie-update.dto';
-import { MovieDto } from '../dtos/movie.dto';
 import { Movie } from '../entities/movie.entity';
-import { MovieBusinessModel } from '../models/movie.businessmodel';
 import * as dateFns from 'date-fns';
 import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import {
-  parseEntitiesToBusinessModels,
-  parseDtoToBusinessModel,
-} from './modelParsers';
+import { parseEntitiesToBusinessModels } from './modelParsers';
+import { MovieBusinessModel } from '../models/movie.businessmodel';
 
 interface DataStore {
   movies: MovieBusinessModel[];
@@ -28,9 +24,12 @@ export interface MemoryDataStore {
   getAllMovies: () => MovieBusinessModel[];
   getNoneGuessedMovies: (count?: number) => MovieBusinessModel[];
   getMovieByImdbId: (id: string) => MovieBusinessModel;
-  addMovie: (movie: MovieDto) => MovieBusinessModel;
+  addMovie: (movie: MovieBusinessModel) => MovieBusinessModel;
   addMovieByImdbId: (id: string) => MovieBusinessModel;
-  updateMovie: (movie: MovieUpdateDto) => MovieBusinessModel;
+  updateMovie: (
+    id: string,
+    movie: Partial<MovieBusinessModel>,
+  ) => MovieBusinessModel;
   getListMetaData: () => unknown;
   isCacheExpired: () => boolean;
 }
@@ -51,7 +50,7 @@ const getMovieByImdbId = (
   return movie;
 };
 
-const addMovie = (store: DataStore, movie: MovieDto) => {
+const addMovie = (store: DataStore, movie: MovieBusinessModel) => {
   if (!movie.imdbId) {
     throw new UnprocessableEntityException();
   }
@@ -59,16 +58,15 @@ const addMovie = (store: DataStore, movie: MovieDto) => {
   if (!!movieExists) {
     return movieExists;
   }
-  const nextMovie = parseDtoToBusinessModel(movie);
-  store.movies.push(nextMovie);
+  store.movies.push(movie);
 
-  return nextMovie;
+  return movie;
 };
 
 const updateMovie = (
   store: DataStore,
   id: string,
-  movie: MovieUpdateDto,
+  movie: Partial<MovieBusinessModel>,
 ): MovieBusinessModel => {
   const currentIndex = store.movies.findIndex((m) => m.imdbId === id);
   if (currentIndex === -1) {
@@ -119,7 +117,7 @@ const createDataStore = (data: Movie[]) => {
     getNoneGuessedMovied(dataStore.movies, count);
   store.getMovieByImdbId = (id: string) =>
     getMovieByImdbId(store.getAllMovies(), id);
-  store.addMovie = (movie: MovieDto) => addMovie(dataStore, movie);
+  store.addMovie = (movie: MovieBusinessModel) => addMovie(dataStore, movie);
   store.addMovieByImdbId = (id: string) => new MovieBusinessModel();
   store.updateMovie = (id: string, movie: MovieUpdateDto) =>
     updateMovie(dataStore, id, movie);

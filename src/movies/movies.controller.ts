@@ -1,5 +1,15 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Public } from 'src/common/decorators/public.decorator';
+import { MovieUpdateDto } from './dtos/movie-update.dto';
+import { MovieDto } from './dtos/movie.dto';
 import { ApiKeyGuard } from './guards/api-key.guard';
 import { MoviesService } from './movies.service';
 
@@ -17,5 +27,15 @@ export class MoviesController {
   @Get('all')
   authRoute() {
     return this.moviesService.GetAllMovie();
+  }
+
+  @Post()
+  addMovie(@Body() movieDto: MovieDto) {
+    return this.moviesService.AddMovieByImdbId(movieDto);
+  }
+
+  @Patch()
+  updateMovie(@Param('id') id: string, @Body() movieUpdate: MovieUpdateDto) {
+    return this.moviesService.UpdateMovie(id, movieUpdate);
   }
 }

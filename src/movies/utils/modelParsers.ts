@@ -19,7 +19,9 @@ const asString = <T>(item: T): string => {
   return `${item}`;
 };
 
-export const parseBusinessModelToEntity = (data: MovieBusinessModel): Movie => {
+export const parseBusinessModelToEntity = (
+  data: Partial<MovieBusinessModel>,
+): Movie => {
   const output = new Movie();
   output.Id = asString<number>(data.id);
   output.ImbdId = asString<string>(data.imdbId);
@@ -59,7 +61,9 @@ export const parseEntitiesToBusinessModels = (
   return output;
 };
 
-export const parseDtoToBusinessModel = (data: MovieDto): MovieBusinessModel => {
+export const parseDtoToBusinessModel = (
+  data: Partial<MovieDto>,
+): MovieBusinessModel => {
   const item = new MovieBusinessModel();
   item.id = data.id;
   item.imdbId = data.imdbId;

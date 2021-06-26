@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Movie } from 'src/movies/entities/movie.entity';
 import { MovieBusinessModel } from 'src/movies/models/movie.businessmodel';
 import createDataStore, { MemoryDataStore } from 'src/movies/utils/dataStore';
+import { parseBusinessModelToEntity } from 'src/movies/utils/modelParsers';
 import { DataService } from '../data-service/data-service.service';
 
 @Injectable()
@@ -30,6 +32,56 @@ export class DataStoreService {
     const movie = store.getMovieByImdbId(id);
 
     return movie;
+  }
+
+  private CleanMovie = (movie: Movie) => {
+    for (const propName in movie) {
+      if (
+        movie[propName] === null ||
+        movie[propName] === undefined ||
+        movie[propName] === ''
+      ) {
+        delete movie[propName];
+      }
+    }
+    return movie;
+  };
+
+  public async UpdateMovieByImdbId(
+    id: string,
+    movie: Partial<MovieBusinessModel>,
+  ) {
+    const store = await this.AccessDataStore();
+    const exists = store.getMovieByImdbId(id);
+    if (!exists) {
+      throw new NotFoundException(
+        `Entity: ${movie.name} with imdb: ${movie.imdbId} does not exist try adding it first`,
+      );
+    }
+
+    const entity = parseBusinessModelToEntity(movie);
+    const data = await this.dataService.UpdateMovieOnServer(
+      this.CleanMovie(entity),
+      id,
+    );
+
+    store.updateMovie(id, movie);
+    return data;
+  }
+
+  public async AddMovie(movie: MovieBusinessModel) {
+    const store = await this.AccessDataStore();
+    const exists = store.getMovieByImdbId(movie.imdbId);
+    if (exists) {
+      return exists;
+    }
+
+    movie.id = store.getNextId();
+    const entity = parseBusinessModelToEntity(movie);
+    const data = await this.dataService.AddMovieOnServer(entity);
+
+    store.addMovie(movie);
+    return data;
   }
 
   private async AccessDataStore(): Promise<MemoryDataStore> {
