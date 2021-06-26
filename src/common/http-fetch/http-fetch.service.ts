@@ -29,4 +29,45 @@ export class HttpFetchService {
 
     return data;
   }
+
+  async patchHttp<Type>(uri: string, body: Type, auth?: string) {
+    const opts: RequestInit = {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    };
+    if (auth) {
+      opts.headers = {
+        ...opts.headers,
+        Authorization: auth,
+      };
+    }
+
+    const resp = await fetch(uri, opts);
+    const data = await resp.json();
+
+    return data;
+  }
+
+  async postHttp<Type>(uri: string, body: Type, auth?: string) {
+    const opts: RequestInit = {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    };
+    if (auth) {
+      opts.headers = {
+        ...opts.headers,
+        Authorization: auth,
+      };
+    }
+    const resp = await fetch(uri, opts);
+    const data = await resp.json();
+
+    return data;
+  }
 }
