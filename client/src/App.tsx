@@ -1,26 +1,49 @@
+// import './App.css';
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {
+  Button,
+  Container,
+  Divider,
+  Grid,
+  Header,
+  Icon,
+  Image,
+  List,
+  Input,
+  Menu,
+  Segment,
+  Sidebar,
+  Visibility,
+} from 'semantic-ui-react';
 
-function App() {
+interface Props {
+  children: React.ReactNode;
+}
+
+const App: React.FC<Props> = ({ children }) => {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Segment inverted textAlign="center" vertical>
+        <Menu fixed="top" inverted>
+          <Container>
+            <Menu.Item>Home</Menu.Item>
+            <Menu.Item position="right">
+              <Input placeholder="Add Token" />
+              <Button as="a" inverted>
+                Add
+              </Button>
+            </Menu.Item>
+          </Container>
+        </Menu>
+      </Segment>
+      <Grid container stackable verticalAlign="middle">
+        <Grid.Row>{children}</Grid.Row>
+        <Grid.Row>
+          <footer>footer</footer>
+        </Grid.Row>
+      </Grid>
     </div>
   );
-}
+};
 
 export default App;
