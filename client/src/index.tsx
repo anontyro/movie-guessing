@@ -5,11 +5,27 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
 import HomePage from './pages/Home';
+import ContextRoute from './components/routing/ContextRoute';
+import { UserProvider } from './context/user-context';
 
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-      <Route exact path="/" component={HomePage} />
+      {/* <ContextRoute
+        exact
+        path="/"
+        component={HomePage}
+        contextComponent={UserProvider}
+      /> */}
+      <Route
+        exact
+        path="/"
+        render={(props) => (
+          <UserProvider>
+            <HomePage />
+          </UserProvider>
+        )}
+      />
     </Router>
   </React.StrictMode>,
   document.getElementById('root'),
