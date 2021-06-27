@@ -18,8 +18,25 @@ import {
 import styled from '@emotion/styled';
 import { useUser } from '../../context/user-context';
 
+const PageContainer = styled.div`
+  height: 94.3%;
+  display: flex;
+  flex-direction: column;
+`;
+
 const BodyContainer = styled.div`
-  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 75%;
+  margin: auto;
+  margin-top: 25px;
+`;
+
+const FooterContainer = styled.footer`
+  background-color: black;
+  height: 100px;
+  color: white;
 `;
 
 const TokenMenu = () => {
@@ -54,7 +71,7 @@ interface Props {
 }
 
 const MainLayout: React.FC<Props> = ({ children }) => (
-  <div className="main-layout">
+  <>
     <Sticky>
       <Segment className="main-menu" inverted>
         <Menu inverted pointing secondary>
@@ -67,15 +84,13 @@ const MainLayout: React.FC<Props> = ({ children }) => (
         </Menu>
       </Segment>
     </Sticky>
-    <Grid container stackable verticalAlign="middle">
-      <Grid.Row>
-        <BodyContainer>{children}</BodyContainer>
-      </Grid.Row>
-      <Grid.Row>
-        <footer>footer</footer>
-      </Grid.Row>
-    </Grid>
-  </div>
+
+    <PageContainer>
+      <BodyContainer>{children}</BodyContainer>
+
+      <FooterContainer>footer</FooterContainer>
+    </PageContainer>
+  </>
 );
 
 export default MainLayout;

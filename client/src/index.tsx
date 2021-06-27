@@ -7,6 +7,7 @@ import 'semantic-ui-css/semantic.min.css';
 import HomePage from './pages/Home';
 import ContextRoute from './components/routing/ContextRoute';
 import { UserProvider } from './context/user-context';
+import './App.css';
 
 ReactDOM.render(
   <React.StrictMode>
