@@ -1,5 +1,7 @@
+import React from 'react';
 import MainLayout from '../../components/_layout/MainLayout';
-import { useUser } from '../../context/user-context';
+import { User, useUser } from '../../context/user-context';
+import styled from '@emotion/styled';
 import {
   Button,
   Card,
@@ -8,35 +10,32 @@ import {
   Icon,
   Image,
   Segment,
+  Divider,
 } from 'semantic-ui-react';
+import BaseCard from '../../components/Cards/BaseCard';
+import { useState } from 'react';
+import { getDataFetch } from '../../utils/fetchData';
 
-interface ApiCardProps {
-  children: React.ReactNode;
-  isDimmed?: boolean;
+const API_ROUTES = {
+  GET_ALL_MOVIES: 'api/movies/all',
+  GET_ALL_NONE_GUESSED: 'api/movies',
+};
+interface PropsApiRequests {
+  currentUser: User;
+  getData: (url: string) => () => Promise<void>;
 }
 
-const ApiCard: React.FC<ApiCardProps> = ({ children, isDimmed = false }) => {
+const ApiRequests: React.FC<PropsApiRequests> = ({ currentUser, getData }) => {
   return (
-    <div>
-      <Dimmer.Dimmable as={Card} dimmed={isDimmed}>
-        {children}
-        <Dimmer active={isDimmed}>
-          <Header as="h2" icon inverted>
-            <Icon name="user secret" />
-            Requires API Token
-          </Header>
-        </Dimmer>
-      </Dimmer.Dimmable>
-    </div>
-  );
-};
-
-const HomePage = () => {
-  const [currentUser, setCurrentUser] = useUser();
-  return (
-    <MainLayout>
+    <>
+      <Divider horizontal>
+        <Header as="h4">
+          <Icon name="desktop" />
+          API Requests
+        </Header>
+      </Divider>
       <Card.Group>
-        <ApiCard>
+        <BaseCard>
           <>
             <Card.Content>
               <Card.Header>Get Next Movies</Card.Header>
@@ -48,14 +47,18 @@ const HomePage = () => {
             </Card.Content>
             <Card.Content extra>
               <div className="button">
-                <Button basic color="green">
+                <Button
+                  onClick={getData(API_ROUTES.GET_ALL_NONE_GUESSED)}
+                  basic
+                  color="green"
+                >
                   GET
                 </Button>
               </div>
             </Card.Content>
           </>
-        </ApiCard>
-        <ApiCard isDimmed={currentUser.apiToken.length === 0}>
+        </BaseCard>
+        <BaseCard isDimmed={currentUser.apiToken.length === 0}>
           <>
             <Card.Content>
               <Card.Header>Get All Movies</Card.Header>
@@ -67,14 +70,68 @@ const HomePage = () => {
             </Card.Content>
             <Card.Content extra>
               <div className="button">
-                <Button basic color="green">
+                <Button
+                  onClick={getData(API_ROUTES.GET_ALL_MOVIES)}
+                  basic
+                  color="green"
+                >
                   GET
                 </Button>
               </div>
             </Card.Content>
           </>
-        </ApiCard>
+        </BaseCard>
       </Card.Group>
+    </>
+  );
+};
+
+const HomePage = () => {
+  const [currentUser, setCurrentUser] = useUser();
+  const [apiData, setApiData]: [
+    apiData: any[],
+    setApiData: (val: any) => void,
+  ] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getData = (url: string) => async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      const authToken = currentUser.apiToken;
+      const data = await getDataFetch(url, authToken);
+      if (data.statusCode === 403) {
+        setCurrentUser({
+          ...currentUser,
+          apiToken: '',
+        });
+        throw new Error('enter a valid auth token');
+      }
+      if (data.statusCode === 200) {
+        setApiData(data.body);
+      }
+      setIsLoading(false);
+    } catch (err) {
+      console.error(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <MainLayout>
+      <ApiRequests currentUser={currentUser} getData={getData} />
+
+      <Divider horizontal>
+        <Header as="h4">
+          <Icon name="eye" />
+          Results
+        </Header>
+      </Divider>
+      <>
+        {apiData.map((movie) => (
+          <div>{movie.name}</div>
+        ))}
+      </>
     </MainLayout>
   );
 };

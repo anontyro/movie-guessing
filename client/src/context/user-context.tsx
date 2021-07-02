@@ -9,12 +9,15 @@ interface Props {
   children: React.ReactNode;
 }
 
-interface User {
-  apiToken?: string;
+export interface User {
+  apiToken: string;
 }
 
 export const UserProvider = ({ children }: Props) => {
-  const [currentUser, setCurrentUser] = useState({ ...defaultUser });
+  const [currentUser, setCurrentUser]: [
+    currentUser: User,
+    setCurrentUser: (user: User) => void,
+  ] = useState({ ...defaultUser });
 
   return (
     <UserContext.Provider value={[currentUser, setCurrentUser]}>
@@ -23,4 +26,7 @@ export const UserProvider = ({ children }: Props) => {
   );
 };
 
-export const useUser = () => React.useContext(UserContext);
+export const useUser = (): [
+  currentUser: User,
+  setCurrentUser: (user: User) => void,
+] => React.useContext(UserContext);

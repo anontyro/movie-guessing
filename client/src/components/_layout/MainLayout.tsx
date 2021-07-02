@@ -2,17 +2,9 @@ import React, { useState } from 'react';
 import {
   Button,
   Container,
-  Divider,
-  Grid,
-  Header,
-  Icon,
-  Image,
-  List,
   Input,
   Menu,
   Segment,
-  Sidebar,
-  Visibility,
   Sticky,
 } from 'semantic-ui-react';
 import styled from '@emotion/styled';
