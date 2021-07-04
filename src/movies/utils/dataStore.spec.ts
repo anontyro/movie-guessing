@@ -126,5 +126,6 @@ describe('dataStore', () => {
     expect(mazeRunner.createdAt).toStrictEqual(new Date('2021-06-17'));
     expect(mazeRunner.type).toBe('');
     expect(mazeRunner.ignored).toBeFalsy;
+    expect(mazeRunner.weight).toBe(10);
   });
 });

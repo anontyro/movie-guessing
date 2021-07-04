@@ -34,7 +34,7 @@ export interface MemoryDataStore {
   isCacheExpired: () => boolean;
 }
 
-const getNoneGuessedMovied = (
+const getNoneGuessedMovies = (
   movies: MovieBusinessModel[],
   count?: number,
 ): MovieBusinessModel[] => {
@@ -114,7 +114,7 @@ const createDataStore = (data: Movie[]) => {
   store.getNextId = () => dataStore.movies[dataStore.movies.length - 1].id + 1;
   store.getAllMovies = () => [...dataStore.movies];
   store.getNoneGuessedMovies = (count?: number) =>
-    getNoneGuessedMovied(dataStore.movies, count);
+    getNoneGuessedMovies(dataStore.movies, count);
   store.getMovieByImdbId = (id: string) =>
     getMovieByImdbId(store.getAllMovies(), id);
   store.addMovie = (movie: MovieBusinessModel) => addMovie(dataStore, movie);

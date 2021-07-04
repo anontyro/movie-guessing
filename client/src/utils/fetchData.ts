@@ -1,12 +1,12 @@
-interface FetchData {
-  body: any;
+interface FetchData<T> {
+  body: T;
   statusCode: number;
 }
 
-export const getDataFetch = async (
+export const getDataFetch = async <T>(
   url: string,
   auth?: string,
-): Promise<FetchData> => {
+): Promise<FetchData<T>> => {
   const authHeader = auth
     ? {
         Authorization: auth,
