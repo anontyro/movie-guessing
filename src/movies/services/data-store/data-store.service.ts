@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Movie } from 'src/movies/entities/movie.entity';
-import { MovieBusinessModel } from 'src/movies/models/movie.businessmodel';
-import createDataStore, { MemoryDataStore } from 'src/movies/utils/dataStore';
-import { parseBusinessModelToEntity } from 'src/movies/utils/modelParsers';
+import { Movie } from '../../entities/movie.entity';
+import { MovieBusinessModel } from '../../models/movie.businessmodel';
+import createDataStore, { MemoryDataStore } from '../../utils/dataStore';
+import { parseBusinessModelToEntity } from '../../utils/modelParsers';
 import { DataService } from '../data-service/data-service.service';
 
 @Injectable()

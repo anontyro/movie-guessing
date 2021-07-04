@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
-import { IS_PUBLIC_ROUTE } from 'src/common/decorators/public.decorator';
+import { IS_PUBLIC_ROUTE } from '../../common/decorators/public.decorator';
 import { Request } from 'express';
 
 @Injectable()

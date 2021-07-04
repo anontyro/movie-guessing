@@ -7,7 +7,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { Public } from 'src/common/decorators/public.decorator';
+import { Public } from '../common/decorators/public.decorator';
 import { MovieUpdateDto } from './dtos/movie-update.dto';
 import { MovieDto } from './dtos/movie.dto';
 import { ApiKeyGuard } from './guards/api-key.guard';

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { HttpFetchService } from 'src/common/http-fetch/http-fetch.service';
-import { Movie } from 'src/movies/entities/movie.entity';
+import { HttpFetchService } from '../../../common/http-fetch/http-fetch.service';
+import { Movie } from '../../entities/movie.entity';
 
 @Injectable()
 export class DataService {

@@ -1,5 +1,4 @@
-export class MovieBusinessModel {
-  public id: number;
+export class MovieOutputBusinessModel {
   public imdbId: string;
   public name: string;
   public releaseYear: number;

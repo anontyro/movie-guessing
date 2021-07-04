@@ -1,6 +1,6 @@
 export class Movie {
   Id: string;
-  ImbdId: string;
+  ImdbId: string;
   Name: string;
   ReleaseYear: string;
   ImdbUrl: string;
@@ -10,4 +10,5 @@ export class Movie {
   CreatedAt: string;
   Type: string;
   Ignored: string;
+  Weight: string;
 }

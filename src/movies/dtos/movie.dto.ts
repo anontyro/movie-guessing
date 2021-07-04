@@ -1,5 +1,4 @@
 export class MovieDto {
-  public readonly id: number;
   public readonly imdbId: string;
   public readonly name: string;
   public readonly releaseYear: number;
@@ -10,4 +9,5 @@ export class MovieDto {
   public readonly createdAt: Date;
   public readonly type: string;
   public readonly ignored: boolean;
+  public readonly weight: number;
 }

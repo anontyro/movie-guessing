@@ -1,30 +1,29 @@
 import rawMovieData from '../consts/movieRawData';
-import movieRawData from '../consts/movieRawData';
 import { MovieDto } from '../dtos/movie.dto';
 import createDataStore, { MemoryDataStore } from './dataStore';
 
 describe('dataStore', () => {
   let store: MemoryDataStore = null;
   beforeEach(() => {
-    store = createDataStore(movieRawData);
+    store = createDataStore(rawMovieData);
   });
   afterEach(() => {
-    store.resetData(movieRawData);
+    store.resetData(rawMovieData);
   });
 
   it('basic store is created', () => {
-    expect(store.getAllMovies().length).toBe(movieRawData.length);
+    expect(store.getAllMovies().length).toBe(rawMovieData.length);
     expect(store.getDataStore()).toBeTruthy();
   });
 
   it('getNextId will return the correct next id in the chain', () => {
-    expect(store.getNextId()).toBe(movieRawData.length + 1);
+    expect(store.getNextId()).toBe(rawMovieData.length + 1);
   });
 
   it('getNoneGuessedMovies returns a subset of the list that have not been guessed', () => {
     const noneGuessedList = store.getNoneGuessedMovies();
     expect(noneGuessedList.length).toBeGreaterThan(0);
-    expect(noneGuessedList.length).toBeLessThan(movieRawData.length);
+    expect(noneGuessedList.length).toBeLessThan(rawMovieData.length);
   });
 
   it('getNoneGuessedMovies can be split into smaller return values using count', () => {
@@ -46,7 +45,6 @@ describe('dataStore', () => {
   describe('addMovie', () => {
     afterEach(() => store.resetData(rawMovieData));
     const movie: MovieDto = {
-      id: 0,
       name: 'Dumb and Dumber',
       imdbId: 'test123',
       createdAt: new Date(),
@@ -57,6 +55,7 @@ describe('dataStore', () => {
       imdbUrl: 'test',
       releaseYear: 2000,
       type: '',
+      weight: 10,
     };
     it('addMovie will add a new movie to the end of the list', () => {
       const id = store.getNextId();
@@ -78,7 +77,7 @@ describe('dataStore', () => {
         id,
       });
 
-      expect(dumbAndDumber.guesser).toBe('');
+      expect(dumbAndDumber.guesser).toBe(null);
       expect(dumbAndDumber.dateGuessed).toBe(null);
       expect(dumbAndDumber.releaseYear).toBe(2000);
     });
