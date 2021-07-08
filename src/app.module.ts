@@ -17,7 +17,7 @@ import appConfig from './config/app.config';
     ServeStaticModule.forRoot({
       rootPath:
         process.env.NODE_ENV === 'production'
-          ? join('./', 'dist')
+          ? join(__dirname, 'dist')
           : join(__dirname, 'public'),
       exclude: ['/api*'],
     }),

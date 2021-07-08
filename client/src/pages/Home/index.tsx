@@ -40,6 +40,17 @@ interface MovieStats {
   monthsLeft: number;
 }
 
+const getPageData = async (imdbId: string) => {
+  const url = `https://www.imdb.com/title/${imdbId}`;
+  const data = await fetch(url);
+  const text = await data.text();
+  const parser = new DOMParser();
+
+  const html = parser.parseFromString(text, 'text/html');
+
+  return html;
+};
+
 const getStatistics = (apiData: MovieItem[]): MovieStats => {
   const totalWithValue = apiData.filter((m) => !!m.imdbId);
   const totalUnguessed = totalWithValue.filter((m) => !m.dateGuessed).length;
