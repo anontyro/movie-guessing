@@ -44,8 +44,8 @@ const getPageData = async (imdbId: string) => {
 const getStatistics = (apiData: MovieItem[]): MovieStats => {
   const totalWithValue = apiData.filter((m) => !!m.imdbId);
   const totalUnguessed = totalWithValue.filter((m) => !m.dateGuessed).length;
-  const weeksLeft = totalUnguessed / 5;
-  const monthsLeft = weeksLeft / 4;
+  const weeksLeft = Math.floor(totalUnguessed / 5);
+  const monthsLeft = Math.floor(weeksLeft / 4);
   return {
     total: totalWithValue.length,
     totalEmpty: totalWithValue.length - apiData.length,
