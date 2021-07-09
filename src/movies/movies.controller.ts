@@ -30,6 +30,11 @@ export class MoviesController {
   }
 
   @Post()
+  clearCache(){
+    return this.moviesService.ClearCache();
+  }
+
+  @Post()
   addMovie(@Body() movieDto: MovieDto) {
     return this.moviesService.AddMovieByImdbId(movieDto);
   }

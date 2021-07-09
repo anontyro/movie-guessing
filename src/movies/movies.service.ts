@@ -49,4 +49,8 @@ export class MoviesService {
 
     return update;
   }
+
+  public async ClearCache(){
+    await this.dataStoreService.CreateMovieCache();
+  }
 }

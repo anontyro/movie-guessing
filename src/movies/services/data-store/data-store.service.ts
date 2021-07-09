@@ -85,13 +85,13 @@ export class DataStoreService {
   }
 
   private async AccessDataStore(): Promise<MemoryDataStore> {
-    if (this.DataStore) {
+    if (this.DataStore && !this.DataStore.isCacheExpired()) {
       return this.DataStore;
     }
     return this.CreateMovieCache();
   }
 
-  private async CreateMovieCache() {
+  public async CreateMovieCache() {
     const movies = await this.dataService.GetMoviesFromServer();
     this.DataStore = createDataStore(movies);
 
