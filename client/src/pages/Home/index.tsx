@@ -17,17 +17,7 @@ import { useState } from 'react';
 import { getDataFetch } from '../../utils/fetchData';
 import ApiRequests from './components/ApiRequests';
 import MovieItem from '../../interfaces/MovieItem';
-import BaseCard from '../../components/Cards/BaseCard';
-
-const ResultsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-`;
-
-const ResultsMetaContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
+import MovieResults from './components/MovieResults';
 
 const StatisticsContainer = styled.div``;
 
@@ -83,7 +73,10 @@ const HomePage = () => {
     null,
   );
 
-  const getData = (url: string) => async (): Promise<void> => {
+  const getData = (url: string, forced = false) => async (): Promise<void> => {
+    if(lastEnpointCalled === url && apiData.movies.length > 0 && !forced){
+      return;
+    }
     try {
       setIsLoading(true);
       const authToken = currentUser.apiToken;
@@ -124,7 +117,7 @@ const HomePage = () => {
           Results
         </Header>
       </Divider>
-      <Segment>
+      <Segment textAlign="center">
         <StatisticsContainer>
           <Statistic>
             <Statistic label="Total" value={apiData.statistics?.total ?? 0} />
@@ -155,31 +148,7 @@ const HomePage = () => {
           </Statistic>
         </StatisticsContainer>
       </Segment>
-      <ResultsContainer>
-        {apiData.movies.map((movie) => (
-          <BaseCard key={movie.imdbId}>
-            <Card.Content>
-              <Card.Header>
-                <a target="blank" href={movie.imdbUrl}>
-                  {movie.name}
-                </a>
-              </Card.Header>
-              <Card.Meta>
-                <ResultsMetaContainer>
-                  {movie.releaseYear}
-                  <Icon
-                    name={
-                      movie.hasBeenGuessed
-                        ? 'check circle outline'
-                        : 'circle outline'
-                    }
-                  />
-                </ResultsMetaContainer>
-              </Card.Meta>
-            </Card.Content>
-          </BaseCard>
-        ))}
-      </ResultsContainer>
+      <MovieResults movies={apiData.movies} lastEndpointCalled={lastEnpointCalled} />
     </MainLayout>
   );
 };

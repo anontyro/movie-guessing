@@ -9,7 +9,7 @@
     "prebuild": "rimraf dist",
     "build:prod": "yarn build && yarn copy-server && yarn build:client && yarn copy-client",
     "build": "npx @nestjs/cli build",
-    "prod:server":"NODE_ENV=production node ./build/main.js",
+    "prod:server": "NODE_ENV=production node ./build/main.js",
     "build:dev": "yarn clean:dev && yarn copy-dev-assets && yarn ",
     "clean:dev": "rm -rf dist && mkdir dist",
     "copy-dev-assets": "cp -R ./src/public ./dist/src",
