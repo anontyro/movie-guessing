@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MovieItem from '../../../../interfaces/MovieItem';
 import styled from '@emotion/styled';
 import {
@@ -13,12 +13,15 @@ import {
   Statistic,
   Grid,
   Accordion,
+  Portal,
+  Modal,
+  Form,
 } from 'semantic-ui-react';
 import AllResults from '../Movies/AllResults';
 import StoredMovieItem from '../../../../interfaces/StoredMovieItem';
 import { randomIntFromInterval } from '../../../../utils/maths';
 import { addMoviesToStorage, clearMovieStorage, getMoviesFromStorage } from '../../../../utils/localStorage';
-import { useEffect } from 'react';
+import * as dateFns from 'date-fns';
 
 const MovieListDays = styled.div`
   text-align: center;
@@ -139,6 +142,7 @@ const NoneGuessedResults: React.FC<NoneGuessedResults> = ({ movies }) => {
   const [hasPersistedData, setHasPersistedData] = useState(false);
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
   const [isAllMoviesActive, setIsAllMoviesActive] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState<StoredMovieItem | undefined>(undefined);
 
   return (
     <>
@@ -193,6 +197,15 @@ const NoneGuessedResults: React.FC<NoneGuessedResults> = ({ movies }) => {
                     >
                       Reselect
                     </Button>
+                    <UpdateMovieWithWinnerModal
+                      isOpen={isSubmitOpen}
+                      onOpen={() => {
+                          setIsSubmitOpen(true);
+                          setSelectedMovie(m);
+                      }}
+                      onClose={() => setIsSubmitOpen(false)}
+                      movie={selectedMovie}
+                    />
                   </MovieListNextItem>
                 </Grid.Column>
               ))}
@@ -207,6 +220,58 @@ const NoneGuessedResults: React.FC<NoneGuessedResults> = ({ movies }) => {
       />
     </>
   );
+};
+
+
+interface UpdateMovieWithWinnerModalProps {
+  movie?: StoredMovieItem;
+  onClose: any;
+  onOpen: any;
+  isOpen: boolean;
+}
+const UpdateMovieWithWinnerModal: React.FC<UpdateMovieWithWinnerModalProps> = ({ movie, onClose, onOpen, isOpen }) => {
+
+    return (
+      <Modal
+        onClose={onClose}
+        onOpen={onOpen}
+        open={isOpen}
+        trigger={
+          <Button color="green" basic>
+            Set Winner
+          </Button>
+        }
+      >
+        {movie && (
+          <>
+            <Modal.Header>Add Winner for {movie.name}</Modal.Header>
+            <Modal.Content>
+              <Form>
+                <Form.Field>
+                  <label htmlFor="">Winners Name</label>
+                  <input type="text" placeholder="winners name" />
+                </Form.Field>
+                <Form.Field>
+                  <label htmlFor="">Date Guessed</label>
+                  <input disabled value={dateFns.format(new Date(), "yyyy-MM-dd")} />
+                </Form.Field>
+              </Form>
+            </Modal.Content>
+            <Modal.Actions>
+              <Button color="black" onClick={onClose}>
+                Close
+              </Button>
+              <Button
+                content="Update Winner"
+                labelPosition="right"
+                icon="checkmark"
+                positive
+              />
+            </Modal.Actions>
+          </>
+        )}
+      </Modal>
+    );
 };
 
 export default NoneGuessedResults;
