@@ -29,7 +29,7 @@ export class MoviesController {
     return this.moviesService.GetAllMovie();
   }
 
-  @Post()
+  @Post('cache-clear')
   clearCache(){
     return this.moviesService.ClearCache();
   }
