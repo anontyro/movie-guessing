@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import MovieItem from '../../../../interfaces/MovieItem';
 import styled from '@emotion/styled';
@@ -16,7 +15,10 @@ import {
   Accordion,
 } from 'semantic-ui-react';
 import AllResults from '../Movies/AllResults';
-
+import StoredMovieItem from '../../../../interfaces/StoredMovieItem';
+import { randomIntFromInterval } from '../../../../utils/maths';
+import { addMoviesToStorage, clearMovieStorage, getMoviesFromStorage } from '../../../../utils/localStorage';
+import { useEffect } from 'react';
 
 const MovieListDays = styled.div`
   text-align: center;
@@ -51,19 +53,15 @@ const NextMovieHeader = styled.div`
   }
 `;
 
-const randomIntFromInterval = (max: number, min = 0) => {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-};
-
 interface NoneGuessedResults {
   movies: MovieItem[];
 }
 
 const NoneGuessedResults: React.FC<NoneGuessedResults> = ({ movies }) => {
-  const getNextWeekMovies = () => {
+  const getNextWeekMovies = (): StoredMovieItem[] => {
     const nextMovies: MovieItem[] = [];
     if (movies.length < 5) {
-      return nextMovies;
+      return [];
     }
     while (nextMovies.length < 5) {
       const movieIndex = randomIntFromInterval(movies.length - 1);
@@ -75,7 +73,11 @@ const NoneGuessedResults: React.FC<NoneGuessedResults> = ({ movies }) => {
         nextMovies.push(movie);
       }
     }
-    return nextMovies;
+    const selectedMovies: StoredMovieItem[] = nextMovies.map((m) => ({
+      ...m,
+      completed: false,
+    }));
+    return selectedMovies;
   };
 
   const randomiseMovies = (): void => {
@@ -100,16 +102,41 @@ const NoneGuessedResults: React.FC<NoneGuessedResults> = ({ movies }) => {
   const reselectItem = (imdbId: string) => {
     const currentMovies = [...nextMovies];
     const indexToReplace = currentMovies.findIndex((m) => m.imdbId === imdbId);
-    if (indexToReplace != -1) {
+    if (indexToReplace !== -1) {
       const nextMovie = getNextUniqueMovie(currentMovies);
       if (nextMovie) {
-        currentMovies.splice(indexToReplace, 1, nextMovie);
+        currentMovies.splice(indexToReplace, 1, { ...nextMovie, completed: false});
         setNextMovies(currentMovies);
       }
     }
   };
 
-  const [nextMovies, setNextMovies] = useState(getNextWeekMovies());
+  const setupNextMovies = () => {
+    const fromStorage = getMoviesFromStorage();
+    if (fromStorage) {
+      setHasPersistedData(true);
+      return fromStorage;
+    }
+    return getNextWeekMovies();
+  };
+
+  const toggleLock = () => {
+      if(hasPersistedData){
+          clearMovieStorage();
+          setHasPersistedData(false);
+          return;
+      }
+
+      setHasPersistedData(true);
+      addMoviesToStorage(nextMovies);
+  }
+
+  useEffect(() => {
+    setNextMovies(setupNextMovies());
+  }, []);
+
+  const [nextMovies, setNextMovies] = useState<StoredMovieItem[]>([]);
+  const [hasPersistedData, setHasPersistedData] = useState(false);
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
   const [isAllMoviesActive, setIsAllMoviesActive] = useState(false);
 
@@ -120,11 +147,15 @@ const NoneGuessedResults: React.FC<NoneGuessedResults> = ({ movies }) => {
           <NextMovieHeader>
             <h2>Next Movie List</h2>
             <div className="buttons">
-              <Button onClick={randomiseMovies} icon>
+              <Button
+                disabled={hasPersistedData}
+                onClick={randomiseMovies}
+                icon
+              >
                 <Icon name="random" />
               </Button>
-              <Button icon>
-                <Icon name="lock" />
+              <Button onClick={toggleLock} icon>
+                <Icon name={hasPersistedData ? 'unlock' : 'lock'} />
               </Button>
             </div>
           </NextMovieHeader>
@@ -155,6 +186,7 @@ const NoneGuessedResults: React.FC<NoneGuessedResults> = ({ movies }) => {
                       </span>
                     </div>
                     <Button
+                      disabled={hasPersistedData}
                       onClick={() => reselectItem(m.imdbId)}
                       basic
                       color="blue"
