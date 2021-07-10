@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { MovieMetaData } from 'src/movies/models/moveMetaData.model';
 import { Movie } from '../../entities/movie.entity';
 import { MovieBusinessModel } from '../../models/movie.businessmodel';
 import createDataStore, { MemoryDataStore } from '../../utils/dataStore';
@@ -18,6 +19,11 @@ export class DataStoreService {
     const movies = store.getAllMovies();
 
     return movies;
+  }
+
+  public async GetMoviesMetaData(): Promise<MovieMetaData> {
+    const store = await this.AccessDataStore();
+    return store.getMovieMetaData();
   }
 
   public async GetAllNoneGuessedMovied() {
@@ -89,6 +95,17 @@ export class DataStoreService {
       return this.DataStore;
     }
     return this.CreateMovieCache();
+  }
+
+  public async CacheInfo() {
+    const store = await this.AccessDataStore();
+    const storeData = store.getStoreData();
+
+    return {
+      Expires: storeData.ttl,
+      StoreChanges: storeData.mutationList,
+      StoreQueries: storeData.queryList,
+    };
   }
 
   public async CreateMovieCache() {

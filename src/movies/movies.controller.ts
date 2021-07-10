@@ -24,13 +24,25 @@ export class MoviesController {
     return this.moviesService.GetAllNoneGuessedMovied();
   }
 
+  @Public()
+  @Get('meta')
+  getMoviesMetaData() {
+    return this.moviesService.GetMoviesMetaData();
+  }
+
+  @Public()
+  @Get('cache-info')
+  getCacheInfo() {
+    return this.moviesService.CacheInfo();
+  }
+
   @Get('all')
   authRoute() {
     return this.moviesService.GetAllMovie();
   }
 
   @Post('cache-clear')
-  clearCache(){
+  clearCache() {
     return this.moviesService.ClearCache();
   }
 
