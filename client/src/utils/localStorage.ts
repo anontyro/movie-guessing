@@ -1,34 +1,56 @@
-import StoredMovieItem from "../interfaces/StoredMovieItem";
+import StoredMovieItem from '../interfaces/StoredMovieItem';
 import * as dateFns from 'date-fns';
 
-interface SavedMovies {
-  dateStored: Date;
-  movies: StoredMovieItem[];
+const STORE_KEYS = {
+  API_TOKEN: 'API_TOKEN',
+  MOVIES_THIS_WEEK: 'MOVIES_THIS_WEEK',
+};
+
+interface StorageItem<T> {
+  dataStored: Date;
+  items: T;
 }
 
-const WEEK_MOVIE_KEY = 'MOVIES_THIS_WEEK';
-
-
-export const getMoviesFromStorage = (): StoredMovieItem[] | null => {
-  const items = localStorage.getItem(WEEK_MOVIE_KEY);
+const clearKeyFromLocalStorage = <T>(key: string): T | null => {
+  const items = getFromLocalStorage<T>(key);
   if (!items) {
     return null;
   }
-  const parsedItems: SavedMovies = JSON.parse(items);
 
-  return parsedItems.movies;
+  localStorage.removeItem(key);
+  return items;
 };
 
-export const clearMovieStorage = () => localStorage.removeItem(WEEK_MOVIE_KEY);
+const addToLocalStorage = <T>(items: T, key: string) => {
+  const storageItem: StorageItem<T> = {
+    dataStored: new Date(),
+    items,
+  };
 
-export const addMoviesToStorage = (movies: StoredMovieItem[]) => {
-    const dateStored = new Date();
-
-    const itemsToSave: SavedMovies = {
-        dateStored,
-        movies
-    }
-
-    const parsedItems = JSON.stringify(itemsToSave);
-    localStorage.setItem(WEEK_MOVIE_KEY, parsedItems);
+  const parsedItem = JSON.stringify(storageItem);
+  localStorage.setItem(key, parsedItem);
 };
+
+const getFromLocalStorage = <T>(key: string): T | null => {
+  const items = localStorage.getItem(key);
+  if (!items) {
+    return null;
+  }
+  const parseItems: StorageItem<T> = JSON.parse(items);
+
+  return parseItems.items;
+};
+
+export const getMoviesFromStorage = (): StoredMovieItem[] | null =>
+  getFromLocalStorage<StoredMovieItem[]>(STORE_KEYS.MOVIES_THIS_WEEK);
+export const clearMovieStorage = () =>
+  clearKeyFromLocalStorage(STORE_KEYS.MOVIES_THIS_WEEK);
+export const addMoviesToStorage = (movies: StoredMovieItem[]) =>
+  addToLocalStorage<StoredMovieItem[]>(movies, STORE_KEYS.MOVIES_THIS_WEEK);
+
+export const addTokenToStorage = (token: string) =>
+  addToLocalStorage(token, STORE_KEYS.API_TOKEN);
+export const getTokenFromStorage = (): string | null =>
+  getFromLocalStorage<string>(STORE_KEYS.API_TOKEN);
+export const clearTokenStorage = () =>
+  clearKeyFromLocalStorage(STORE_KEYS.API_TOKEN);

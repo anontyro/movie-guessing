@@ -41,6 +41,13 @@ export class MoviesController {
     return this.moviesService.GetAllMovie();
   }
 
+  @Get('validate')
+  checkValidateToken() {
+    return {
+      message: 'valid access token',
+    };
+  }
+
   @Post('cache-clear')
   clearCache() {
     return this.moviesService.ClearCache();

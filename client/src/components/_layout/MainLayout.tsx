@@ -9,6 +9,14 @@ import {
 } from 'semantic-ui-react';
 import styled from '@emotion/styled';
 import { useUser } from '../../context/user-context';
+import { getDataFetch } from '../../utils/fetchData';
+import MOVIE_ROUTES from '../../consts/movieRoutes';
+import {
+  addTokenToStorage,
+  clearTokenStorage,
+  getTokenFromStorage,
+} from '../../utils/localStorage';
+import { useEffect } from 'react';
 
 const PageContainer = styled.div`
   height: 94.3%;
@@ -31,9 +39,52 @@ const FooterContainer = styled.footer`
   color: white;
 `;
 
+const validateToken = async (token: string) => {
+  try {
+    const validate = await getDataFetch(MOVIE_ROUTES.VALIDATE_TOKEN, token);
+    if (validate.statusCode === 403) {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const TokenMenu = () => {
   const [currentUser, setCurrentUser] = useUser();
   const [token, setToken] = useState(currentUser.apiToken);
+
+  useEffect(() => {
+    const storedToken = getTokenFromStorage();
+    if (storedToken && storedToken.length > 0) {
+      setCurrentUser({
+        apiToken: storedToken,
+      });
+      setToken('Added From Storage');
+    }
+  }, []);
+
+  const addToken = async () => {
+    const isValid = await validateToken(token);
+    if (!isValid) {
+      setToken('');
+      return;
+    }
+    addTokenToStorage(token);
+    setCurrentUser({
+      apiToken: token,
+    });
+  };
+
+  const clearToken = () => {
+    clearTokenStorage();
+    setCurrentUser({
+      apiToken: '',
+    });
+    setToken('');
+  };
+
   return (
     <Menu.Item position="right">
       <Input
@@ -42,18 +93,25 @@ const TokenMenu = () => {
         onChange={(e) => setToken(e.target.value)}
         value={token}
       />
-      <Button
-        onClick={() =>
-          setCurrentUser({
-            apiToken: token,
-          })
-        }
-        as="a"
-        inverted
-        style={{ marginLeft: '0.5em' }}
-      >
-        Add
-      </Button>
+      {currentUser.apiToken.length === 0 ? (
+        <Button
+          onClick={addToken}
+          as="a"
+          inverted
+          style={{ marginLeft: '0.5em' }}
+        >
+          Add
+        </Button>
+      ) : (
+        <Button
+          as="a"
+          onClick={clearToken}
+          inverted
+          style={{ marginLeft: '0.5em' }}
+        >
+          Clear
+        </Button>
+      )}
     </Menu.Item>
   );
 };
