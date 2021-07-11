@@ -19,7 +19,7 @@ import {
 import { useEffect } from 'react';
 
 const PageContainer = styled.div`
-  height: 94.3%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 `;
@@ -116,31 +116,72 @@ const TokenMenu = () => {
   );
 };
 
+const NavBar = styled.div`
+  display: flex;
+  width: 100%;
+  color: white;
+  background-color: black;
+  height: 6rem;
+  padding: 1rem 3rem;
+`;
+
+const MainMenu = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: auto;
+`;
+
+const MenuContainer = styled.div`
+  margin: auto;
+  display: inline;
+  .main-container {
+    flex-grow: 1;
+  }
+`;
+
+const MainContainer = styled(MenuContainer)`
+  flex-grow: 1;
+`;
+
+const MenuContainerMobileHide = styled(MenuContainer)`
+  @media only screen and (max-width: 600px) {
+    display: none;
+  }
+`;
+
+const MenuItem = styled.a`
+  margin: 1rem;
+  font-size: 1.7rem;
+  color: white;
+  cursor: pointer;
+  .active {
+    cursor: unset;
+    text-decoration: underline;
+  }
+`;
+
 interface Props {
   children: React.ReactNode;
 }
 
 const MainLayout: React.FC<Props> = ({ children }) => (
-  <>
-    <Sticky>
-      <Segment className="main-menu" inverted>
-        <Menu inverted pointing secondary>
-          <Container>
-            <Menu.Item as="a" active>
-              Home
-            </Menu.Item>
-            <TokenMenu />
-          </Container>
-        </Menu>
-      </Segment>
-    </Sticky>
+  <PageContainer>
+    <NavBar>
+      <MainMenu>
+        <MainContainer>
+          <MenuItem className="active">Home</MenuItem>
+          <MenuItem className="">About</MenuItem>
+        </MainContainer>
+        <MenuContainerMobileHide>
+          <TokenMenu />
+        </MenuContainerMobileHide>
+      </MainMenu>
+    </NavBar>
+    <BodyContainer>{children}</BodyContainer>
 
-    <PageContainer>
-      <BodyContainer>{children}</BodyContainer>
-
-      <FooterContainer>footer</FooterContainer>
-    </PageContainer>
-  </>
+    <FooterContainer>footer</FooterContainer>
+  </PageContainer>
 );
 
 export default MainLayout;
