@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import MainLayout from '../../components/_layout/MainLayout';
 import { User, useUser } from '../../context/user-context';
 import styled from '@emotion/styled';
@@ -18,6 +18,8 @@ import { getDataFetch } from '../../utils/fetchData';
 import ApiRequests from './components/ApiRequests';
 import MovieItem from '../../interfaces/MovieItem';
 import MovieResults from './components/MovieResults';
+import MOVIE_ROUTES from '../../consts/movieRoutes';
+import MovieMetadata from '../../interfaces/MovieMetadata';
 
 const StatisticsContainer = styled.div``;
 
@@ -41,21 +43,6 @@ const getPageData = async (imdbId: string) => {
   return html;
 };
 
-const getStatistics = (apiData: MovieItem[]): MovieStats => {
-  const totalWithValue = apiData.filter((m) => !!m.imdbId);
-  const totalUnguessed = totalWithValue.filter((m) => !m.dateGuessed).length;
-  const weeksLeft = Math.floor(totalUnguessed / 5);
-  const monthsLeft = Math.floor(weeksLeft / 4);
-  return {
-    total: totalWithValue.length,
-    totalEmpty: totalWithValue.length - apiData.length,
-    totalGuessed: totalWithValue.length - totalUnguessed,
-    totalUnguessed,
-    weeksLeft,
-    monthsLeft,
-  };
-};
-
 const HomePage = () => {
   const [currentUser, setCurrentUser] = useUser();
   const [apiData, setApiData]: [
@@ -73,35 +60,66 @@ const HomePage = () => {
     null,
   );
 
-  const getData = (url: string, forced = false) => async (): Promise<void> => {
-    if(lastEnpointCalled === url && apiData.movies.length > 0 && !forced){
-      return;
-    }
+  useEffect(() => {
+    getMovieMetadata();
+  }, []);
+
+  const getMovieMetadata = async () => {
     try {
       setIsLoading(true);
-      const authToken = currentUser.apiToken;
-      const data = await getDataFetch<MovieItem[]>(url, authToken);
-      if (data.statusCode === 403) {
-        setCurrentUser({
-          ...currentUser,
-          apiToken: '',
-        });
-        throw new Error('enter a valid auth token');
-      }
-      if (data.statusCode === 200) {
-        setApiData({
-          movies: data.body.filter((m) => !!m.imdbId),
-          statistics: getStatistics(data.body),
-        });
-        setLastEndpointCalled(url);
-      }
-      setIsLoading(false);
+      const data = await getDataFetch<any>(MOVIE_ROUTES.GET_MOVIE_METADATA);
+      const metadata: MovieMetadata = {
+        total: data.body.Total,
+        totalEmpty: data.body.TotalEmpty,
+        totalGuessed: data.body.TotalGuessed,
+        totalUnguessed: data.body.TotalUnguessed,
+        weeksLeft: data.body.WeeksLeft,
+        monthsLeft: data.body.MonthsLeft,
+      };
+      setApiData({
+        ...apiData,
+        statistics: metadata,
+      });
     } catch (err) {
       console.error(err.message);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const getData =
+    (url: string, ignored = false, forced = false) =>
+    async (): Promise<void> => {
+      if (lastEnpointCalled === url && apiData.movies.length > 0 && !forced) {
+        return;
+      }
+      try {
+        setIsLoading(true);
+        const authToken = currentUser.apiToken;
+        const data = await getDataFetch<MovieItem[]>(url, authToken);
+        if (data.statusCode === 403) {
+          setCurrentUser({
+            ...currentUser,
+            apiToken: '',
+          });
+          throw new Error('enter a valid auth token');
+        }
+        if (data.statusCode === 200) {
+          setApiData({
+            ...apiData,
+            movies: data.body.filter((m) => !!m.imdbId),
+          });
+          if (!ignored) {
+            setLastEndpointCalled(url);
+          }
+        }
+        setIsLoading(false);
+      } catch (err) {
+        console.error(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
   return (
     <MainLayout>
@@ -148,7 +166,10 @@ const HomePage = () => {
           </Statistic>
         </StatisticsContainer>
       </Segment>
-      <MovieResults movies={apiData.movies} lastEndpointCalled={lastEnpointCalled} />
+      <MovieResults
+        movies={apiData.movies}
+        lastEndpointCalled={lastEnpointCalled}
+      />
     </MainLayout>
   );
 };

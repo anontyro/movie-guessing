@@ -5,6 +5,7 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
 import HomePage from './pages/Home';
+import AboutPage from './pages/About';
 import ContextRoute from './components/routing/ContextRoute';
 import { UserProvider } from './context/user-context';
 import './App.css';
@@ -24,6 +25,14 @@ ReactDOM.render(
         render={(props) => (
           <UserProvider>
             <HomePage />
+          </UserProvider>
+        )}
+      />
+      <Route
+        path="/about"
+        render={() => (
+          <UserProvider>
+            <AboutPage />
           </UserProvider>
         )}
       />

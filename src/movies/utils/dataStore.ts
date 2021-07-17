@@ -7,14 +7,16 @@ import {
 } from '@nestjs/common';
 import { parseEntitiesToBusinessModels } from './modelParsers';
 import { MovieBusinessModel } from '../models/movie.businessmodel';
+import { MovieMetaData } from '../models/moveMetaData.model';
 
+interface DataStoreMeta {
+  ttl: Date;
+  queryList: [];
+  mutationList: [];
+}
 interface DataStore {
   movies: MovieBusinessModel[];
-  meta: {
-    ttl: Date;
-    queryList: [];
-    mutationList: [];
-  };
+  meta: DataStoreMeta;
 }
 
 export interface MemoryDataStore {
@@ -30,8 +32,9 @@ export interface MemoryDataStore {
     id: string,
     movie: Partial<MovieBusinessModel>,
   ) => MovieBusinessModel;
-  getListMetaData: () => unknown;
+  getMovieMetaData: () => MovieMetaData;
   isCacheExpired: () => boolean;
+  getStoreData: () => DataStoreMeta;
 }
 
 const getNoneGuessedMovies = (
@@ -82,12 +85,23 @@ const updateMovie = (
   return { ...store.movies[currentIndex] };
 };
 
-const getListMetaData = (store: DataStore) => {
-  const meta = {
-    totalSize: store.movies.length,
-    latestId: store.movies[store.movies.length - 1].id,
-    totalUnGuessed: store.movies.filter((m) => !m.hasBeenGuessed).length,
-  };
+const getMovieMetaData = (store: DataStore): MovieMetaData => {
+  const total = store.movies;
+  const totalWithValues = total.filter((m) => !!m.imdbId).length;
+  const totalEmpty = total.length - totalWithValues;
+  const totalGuessed = total.filter((m) => !!m.guesser).length;
+  const totalUnguessed = totalWithValues - totalGuessed;
+  const weeksLeft = Math.floor(totalUnguessed / 5);
+  const monthsLeft = Math.floor(weeksLeft / 4);
+
+  const meta = new MovieMetaData(
+    totalWithValues,
+    totalEmpty,
+    totalGuessed,
+    totalUnguessed,
+    weeksLeft,
+    monthsLeft,
+  );
 
   return meta;
 };
@@ -121,9 +135,10 @@ const createDataStore = (data: Movie[]) => {
   store.addMovieByImdbId = (id: string) => new MovieBusinessModel();
   store.updateMovie = (id: string, movie: MovieUpdateDto) =>
     updateMovie(dataStore, id, movie);
-  store.getListMetaData = () => getListMetaData(dataStore);
+  store.getMovieMetaData = () => getMovieMetaData(dataStore);
   store.resetData = (data: Movie[]) => (dataStore = buildStore(data));
-  store.isCacheExpired = () => dateFns.isAfter(dataStore.meta.ttl, new Date());
+  store.isCacheExpired = () => dateFns.isAfter(new Date(), dataStore.meta.ttl);
+  store.getStoreData = () => dataStore.meta;
 
   return store as MemoryDataStore;
 };
