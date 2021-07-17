@@ -13,7 +13,7 @@
     "build:dev": "yarn clean:dev && yarn copy-dev-assets && yarn ",
     "clean:dev": "rm -rf dist && mkdir dist",
     "copy-dev-assets": "cp -R ./src/public ./dist/src",
-    "build:client": "cd ./client && yarn build",
+    "build:client": "cd ./client && yarn install && yarn build",
     "clean": "rm -rf build && mkdir build",
     "copy-client": "cp -R ./client/build/. ./build/dist",
     "copy-server": "cp -R ./dist/src/. ./build",
