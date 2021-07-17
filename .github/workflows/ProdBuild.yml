@@ -3,7 +3,7 @@ name: New Prod Build Movie Guessing
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build:
