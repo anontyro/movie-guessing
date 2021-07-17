@@ -4,7 +4,8 @@ FROM node:14-alpine as builder
 WORKDIR /home/node/app
 COPY . .
 
-RUN yarn install && yarn build:prod
+RUN yarn install && yarn install:client
+RUN yarn build:prod
 
 FROM node:14-alpine
 ENV NODE_ENV=production
