@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Button,
   Container,
+  Icon,
   Input,
   Menu,
   Segment,
@@ -17,7 +18,7 @@ import {
   getTokenFromStorage,
 } from '../../utils/localStorage';
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const PageContainer = styled.div`
   height: 100%;
@@ -32,15 +33,18 @@ const BodyContainer = styled.div`
   width: 75%;
   margin: auto;
   margin-top: 25px;
+  margin-bottom: 10px;
   @media (max-width: 600px) {
     width: 90%;
   }
 `;
 
 const FooterContainer = styled.footer`
+  display: flex;
+  flex-direction: column;
   background-color: black;
   height: 100px;
-  color: white;
+  color: gray;
   flex-shrink: 0;
 `;
 
@@ -168,31 +172,96 @@ const MenuItem = styled(Link)`
   }
 `;
 
+const FooterContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 75%;
+  justify-content: center;
+  width: auto;
+  margin: auto;
+
+  a {
+    color: gray;
+    :hover {
+      color: white;
+    }
+  }
+
+  .footer-links {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+  .footer-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 10px 0;
+  }
+`;
+
 interface Props {
   children: React.ReactNode;
 }
 
-const MainLayout: React.FC<Props> = ({ children }) => (
-  <PageContainer>
-    <NavBar>
-      <MainMenu>
-        <MainContainer>
-          <MenuItem to="/" className="active">
-            Home
-          </MenuItem>
-          <MenuItem to="/about" className="">
-            About
-          </MenuItem>
-        </MainContainer>
-        <MenuContainerMobileHide>
-          <TokenMenu />
-        </MenuContainerMobileHide>
-      </MainMenu>
-    </NavBar>
-    <BodyContainer>{children}</BodyContainer>
+const currentYear = () => {
+  return new Date().getFullYear();
+};
 
-    <FooterContainer>footer</FooterContainer>
-  </PageContainer>
-);
+const MainLayout: React.FC<Props> = ({ children }) => {
+  const location = useLocation();
+  return (
+    <PageContainer>
+      <NavBar>
+        <MainMenu>
+          <MainContainer>
+            <MenuItem
+              to="/"
+              className={location.pathname === '/' ? 'active' : ''}
+            >
+              Home
+            </MenuItem>
+            <MenuItem
+              to="/about"
+              className={location.pathname === '/about' ? 'active' : ''}
+            >
+              About
+            </MenuItem>
+          </MainContainer>
+          <MenuContainerMobileHide>
+            <TokenMenu />
+          </MenuContainerMobileHide>
+        </MainMenu>
+      </NavBar>
+      <BodyContainer>{children}</BodyContainer>
+
+      <FooterContainer>
+        <FooterContent>
+          <div className="footer-links">
+            <Menu.Item
+              href="https://www.facebook.com/AWILKINSON.SG"
+              target="_blank"
+            >
+              <Icon link name="facebook" size="big" />
+            </Menu.Item>
+            <Menu.Item href="https://github.com/anontyro" target="_blank">
+              <Icon link name="github square" size="big" />
+            </Menu.Item>
+            <Menu.Item
+              href="https://www.linkedin.com/in/wilkinsonalexander"
+              target="_blank"
+            >
+              <Icon link name="linkedin" size="big" />
+            </Menu.Item>
+            <Menu.Item href="https://alexwilkinson.co" target="_blank">
+              <Icon link name="globe" size="big" />
+            </Menu.Item>
+          </div>
+          <div className="footer-info">{`Alex Wilkinson ${currentYear()}`}</div>
+        </FooterContent>
+      </FooterContainer>
+    </PageContainer>
+  );
+};
 
 export default MainLayout;
