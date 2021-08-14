@@ -38,41 +38,53 @@ const AllResults: React.FC<Props> = ({
   movies,
   isActive = true,
   setIsActive,
-}) => (
-  <Accordion className="m-bot-1" fluid styled>
-    <Accordion.Title active={isActive} onClick={() => setIsActive(!isActive)}>
-      <Icon name="dropdown" />
-      All Movies
-    </Accordion.Title>
-    <Accordion.Content active={isActive}>
-      <MainResultContainer>
-        {movies.map((movie) => (
-          <BaseCard key={movie.imdbId}>
-            <Card.Content>
-              <Card.Header>
-                <a target="blank" href={movie.imdbUrl}>
-                  {movie.name}
-                </a>
-              </Card.Header>
-              <Card.Meta>
-                <ResultsMetaContainer>
-                  {movie.releaseYear}
-                  <Icon
-                    name={
-                      movie.hasBeenGuessed
-                        ? 'check circle outline'
-                        : 'circle outline'
-                    }
-                  />
-                </ResultsMetaContainer>
-              </Card.Meta>
-            </Card.Content>
-          </BaseCard>
-        ))}
-      </MainResultContainer>
-    </Accordion.Content>
-  </Accordion>
-);
+}) => {
+  const onDragStart =
+    (imdbId: string) => (event: React.DragEvent<HTMLDivElement>) => {
+      event.dataTransfer.setData('text/plain', imdbId);
+      event.dataTransfer.effectAllowed = 'move';
+    };
 
+  const onDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const data = event.dataTransfer.getData('text/plain');
+    console.log(`drop here with data`, data);
+  };
+  return (
+    <Accordion className="m-bot-1" fluid styled>
+      <Accordion.Title active={isActive} onClick={() => setIsActive(!isActive)}>
+        <Icon name="dropdown" />
+        All Movies
+      </Accordion.Title>
+      <Accordion.Content active={isActive}>
+        <MainResultContainer>
+          {movies.map((movie) => (
+            <BaseCard key={movie.imdbId} dragStart={onDragStart(movie.imdbId)}>
+              <Card.Content>
+                <Card.Header>
+                  <a target="blank" href={movie.imdbUrl}>
+                    {movie.name}
+                  </a>
+                </Card.Header>
+                <Card.Meta>
+                  <ResultsMetaContainer>
+                    {movie.releaseYear}
+                    <Icon
+                      name={
+                        movie.hasBeenGuessed
+                          ? 'check circle outline'
+                          : 'circle outline'
+                      }
+                    />
+                  </ResultsMetaContainer>
+                </Card.Meta>
+              </Card.Content>
+            </BaseCard>
+          ))}
+        </MainResultContainer>
+      </Accordion.Content>
+    </Accordion>
+  );
+};
 
 export default AllResults;

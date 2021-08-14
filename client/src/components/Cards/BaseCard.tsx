@@ -17,11 +17,16 @@ const CardContainer = styled.div`
 interface ApiCardProps {
   children: React.ReactNode;
   isDimmed?: boolean;
+  dragStart?: (event: React.DragEvent<HTMLDivElement>) => any;
 }
 
-const BaseCard: React.FC<ApiCardProps> = ({ children, isDimmed = false }) => {
+const BaseCard: React.FC<ApiCardProps> = ({
+  children,
+  isDimmed = false,
+  dragStart = (event: React.DragEvent<HTMLDivElement>) => {},
+}) => {
   return (
-    <CardContainer>
+    <CardContainer draggable="true" onDragStart={dragStart}>
       <Dimmer.Dimmable as={Card} dimmed={isDimmed}>
         {children}
         <Dimmer active={isDimmed}>

@@ -20,6 +20,7 @@ import MovieItem from '../../interfaces/MovieItem';
 import MovieResults from './components/MovieResults';
 import MOVIE_ROUTES from '../../consts/movieRoutes';
 import MovieMetadata from '../../interfaces/MovieMetadata';
+import NextMovies from './components/Movies/NextMovies';
 
 const StatisticsContainer = styled.div``;
 
@@ -166,6 +167,7 @@ const HomePage = () => {
           </Statistic>
         </StatisticsContainer>
       </Segment>
+      <NextMovies movies={apiData.movies} />
       <MovieResults
         movies={apiData.movies}
         lastEndpointCalled={lastEnpointCalled}
