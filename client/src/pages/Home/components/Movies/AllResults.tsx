@@ -21,6 +21,7 @@ const MainResultContainer = styled.div`
   flex-wrap: wrap;
   max-height: 50vh;
   overflow-y: auto;
+  justify-content: center;
 `;
 
 const ResultsMetaContainer = styled.div`

@@ -43,6 +43,35 @@ const NextMovieHeader = styled.div`
   h2 {
     margin: unset;
   }
+
+  @media (max-width: 600px) {
+    .buttons {
+      display: flex;
+    }
+  }
+`;
+
+const NextMovieList = styled(Segment)`
+  overflow-y: auto;
+  .calendar-week {
+    min-width: 1000px;
+  }
+  .calendar-movies {
+    height: 180px;
+  }
+`;
+
+const NoMovies = styled(Grid.Column)`
+  position: relative;
+  color: white;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  .no-movies-title {
+  }
 `;
 
 interface Props {
@@ -156,8 +185,8 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
           </div>
         </NextMovieHeader>
       </Segment>
-      <Segment>
-        <Grid columns="equal">
+      <NextMovieList>
+        <Grid className="calendar-week" columns="equal">
           <Grid.Row as={MovieListDays}>
             <Grid.Column>Monday</Grid.Column>
             <Grid.Column>Tuesday</Grid.Column>
@@ -165,45 +194,51 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
             <Grid.Column>Thursday</Grid.Column>
             <Grid.Column>Friday</Grid.Column>
           </Grid.Row>
-          <Grid.Row textAlign="center">
-            {nextMovies.map((m) => (
-              <Grid.Column key={m.imdbId}>
-                <MovieListNextItem>
-                  <div className="main-movie-section">
-                    <a
-                      className="main-movie-title"
-                      target="blank"
-                      href={m.imdbUrl}
+          <Grid.Row className="calendar-movies" textAlign="center">
+            {nextMovies.length > 0 ? (
+              nextMovies.map((m) => (
+                <Grid.Column key={m.imdbId}>
+                  <MovieListNextItem>
+                    <div className="main-movie-section">
+                      <a
+                        className="main-movie-title"
+                        target="blank"
+                        href={m.imdbUrl}
+                      >
+                        {m.name}
+                      </a>
+                      <span className="main-movie-release-year">
+                        {m.releaseYear}
+                      </span>
+                    </div>
+                    <Button
+                      disabled={hasPersistedData}
+                      onClick={() => reselectItem(m.imdbId)}
+                      basic
+                      color="blue"
                     >
-                      {m.name}
-                    </a>
-                    <span className="main-movie-release-year">
-                      {m.releaseYear}
-                    </span>
-                  </div>
-                  <Button
-                    disabled={hasPersistedData}
-                    onClick={() => reselectItem(m.imdbId)}
-                    basic
-                    color="blue"
-                  >
-                    Reselect
-                  </Button>
-                  <UpdateMovieWithWinnerModal
-                    isOpen={isSubmitOpen}
-                    onOpen={() => {
-                      setIsSubmitOpen(true);
-                      setSelectedMovie(m);
-                    }}
-                    onClose={() => setIsSubmitOpen(false)}
-                    movie={selectedMovie}
-                  />
-                </MovieListNextItem>
-              </Grid.Column>
-            ))}
+                      Reselect
+                    </Button>
+                    <UpdateMovieWithWinnerModal
+                      isOpen={isSubmitOpen}
+                      onOpen={() => {
+                        setIsSubmitOpen(true);
+                        setSelectedMovie(m);
+                      }}
+                      onClose={() => setIsSubmitOpen(false)}
+                      movie={selectedMovie}
+                    />
+                  </MovieListNextItem>
+                </Grid.Column>
+              ))
+            ) : (
+              <NoMovies>
+                <div className="no-movies-title">No Movies Selected</div>
+              </NoMovies>
+            )}
           </Grid.Row>
         </Grid>
-      </Segment>
+      </NextMovieList>
     </Segment.Group>
   );
 };

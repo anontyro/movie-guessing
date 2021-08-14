@@ -31,6 +31,9 @@ const BodyContainer = styled.div`
   width: 75%;
   margin: auto;
   margin-top: 25px;
+  @media (max-width: 600px) {
+    width: 90%;
+  }
 `;
 
 const FooterContainer = styled.footer`
@@ -158,6 +161,7 @@ const MenuItem = styled.a`
   .active {
     cursor: unset;
     text-decoration: underline;
+    color: blue;
   }
 `;
 

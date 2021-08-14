@@ -12,6 +12,9 @@ import styled from '@emotion/styled';
 
 const CardContainer = styled.div`
   margin: 10px;
+  @media (max-width: 600px) {
+    width: 90%;
+  }
 `;
 
 interface ApiCardProps {
