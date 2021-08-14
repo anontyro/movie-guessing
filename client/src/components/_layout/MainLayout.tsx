@@ -17,6 +17,7 @@ import {
   getTokenFromStorage,
 } from '../../utils/localStorage';
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const PageContainer = styled.div`
   height: 100%;
@@ -40,6 +41,7 @@ const FooterContainer = styled.footer`
   background-color: black;
   height: 100px;
   color: white;
+  flex-shrink: 0;
 `;
 
 const validateToken = async (token: string) => {
@@ -126,6 +128,7 @@ const NavBar = styled.div`
   background-color: black;
   height: 6rem;
   padding: 1rem 3rem;
+  flex-shrink: 0;
 `;
 
 const MainMenu = styled.div`
@@ -153,7 +156,7 @@ const MenuContainerMobileHide = styled(MenuContainer)`
   }
 `;
 
-const MenuItem = styled.a`
+const MenuItem = styled(Link)`
   margin: 1rem;
   font-size: 1.7rem;
   color: white;
@@ -174,8 +177,12 @@ const MainLayout: React.FC<Props> = ({ children }) => (
     <NavBar>
       <MainMenu>
         <MainContainer>
-          <MenuItem className="active">Home</MenuItem>
-          <MenuItem className="">About</MenuItem>
+          <MenuItem to="/" className="active">
+            Home
+          </MenuItem>
+          <MenuItem to="/about" className="">
+            About
+          </MenuItem>
         </MainContainer>
         <MenuContainerMobileHide>
           <TokenMenu />
