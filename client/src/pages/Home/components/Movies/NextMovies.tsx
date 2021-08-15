@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { DragEventHandler, useEffect, useState } from 'react';
 import MovieItem from '../../../../interfaces/MovieItem';
 import StoredMovieItem from '../../../../interfaces/StoredMovieItem';
 import {
@@ -136,11 +136,26 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
     return getNextUniqueMovie(currentMovies);
   };
 
-  const reselectItem = (imdbId: string) => {
+  const reselectItem = (imdbId: string, updatedId?: string) => {
+    if (hasPersistedData) {
+      return;
+    }
+
     const currentMovies = [...nextMovies];
     const indexToReplace = currentMovies.findIndex((m) => m.imdbId === imdbId);
     if (indexToReplace !== -1) {
-      const nextMovie = getNextUniqueMovie(currentMovies);
+      let nextMovie = null;
+      if (updatedId) {
+        const movieToUpdate = movies.find((m) => m.imdbId === updatedId);
+        const alreadyAdded = currentMovies.findIndex(
+          (m) => m.imdbId === updatedId,
+        );
+        if (movieToUpdate && alreadyAdded === -1) {
+          nextMovie = movieToUpdate;
+        }
+      } else {
+        nextMovie = getNextUniqueMovie(currentMovies);
+      }
       if (nextMovie) {
         currentMovies.splice(indexToReplace, 1, {
           ...nextMovie,
@@ -165,6 +180,21 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
   useEffect(() => {
     setNextMovies(setupNextMovies());
   }, []);
+
+  const onDrop = (id: string) => (event: any) => {
+    event.preventDefault();
+    const data = event.dataTransfer;
+    if (data) {
+      data.dropEffect = 'move';
+      const val = event.dataTransfer?.getData('text/plain');
+      reselectItem(id, val);
+    }
+  };
+
+  const onDragOver = (event: any) => {
+    event.preventDefault();
+    const data = event.dataTransfer?.getData('text/plain');
+  };
 
   return (
     <Segment.Group className="w-100">
@@ -198,7 +228,10 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
             {nextMovies.length > 0 ? (
               nextMovies.map((m) => (
                 <Grid.Column key={m.imdbId}>
-                  <MovieListNextItem>
+                  <MovieListNextItem
+                    onDrop={onDrop(m.imdbId)}
+                    onDragOver={onDragOver}
+                  >
                     <div className="main-movie-section">
                       <a
                         className="main-movie-title"
