@@ -1,19 +1,6 @@
 import React from 'react';
 import MainLayout from '../../components/_layout/MainLayout';
-import styled from '@emotion/styled';
-import {
-  Button,
-  Card,
-  Dimmer,
-  Header,
-  Icon,
-  Image,
-  Segment,
-  Divider,
-  Statistic,
-  Grid,
-  Container,
-} from 'semantic-ui-react';
+import { Header, Image, Segment, Grid, Container } from 'semantic-ui-react';
 
 const AboutPage: React.FC = () => {
   return (
