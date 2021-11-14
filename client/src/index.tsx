@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Helmet } from 'react-helmet';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
 import HomePage from './pages/Home';
 import AboutPage from './pages/About';
@@ -13,41 +13,58 @@ import './App.css';
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-      {/* <ContextRoute
+      <Routes>
+        {/* <ContextRoute
         exact
         path="/"
         component={HomePage}
         contextComponent={UserProvider}
       /> */}
-      <Route
-        exact
-        path="/"
-        children={
-          <UserProvider>
-            <Helmet>
-              <title>Home</title>
-              <link
-                rel="canonical"
-                href="https://movie-guessing.alexwilkinson.co/"
-              />
-              <meta property="og:image" content="/public/logo192.png" />
-              <meta
-                property="og:description"
-                content="A simple movie guessing game allowing people to come together and try to guess the movies"
-              />
-            </Helmet>
-            <HomePage />
-          </UserProvider>
-        }
-      />
-      <Route
-        path="/about"
-        children={
-          <UserProvider>
-            <AboutPage />
-          </UserProvider>
-        }
-      />
+        <Route
+          path="/"
+          element={
+            <div>
+              <UserProvider>
+                <Helmet>
+                  <title>Home</title>
+                  <link
+                    rel="canonical"
+                    href="https://movie-guessing.alexwilkinson.co/"
+                  />
+                  <meta property="og:image" content="/public/logo192.png" />
+                  <meta
+                    property="og:description"
+                    content="A simple movie guessing game allowing people to come together and try to guess the movies"
+                  />
+                </Helmet>
+                <HomePage />
+              </UserProvider>
+            </div>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <div>
+              <UserProvider>
+                <Helmet>
+                  <title>About</title>
+                  <link
+                    rel="canonical"
+                    href="https://movie-guessing.alexwilkinson.co/about"
+                  />
+                  <meta property="og:image" content="/public/logo192.png" />
+                  <meta
+                    property="og:description"
+                    content="Information about the stack used and a brief about what this is"
+                  />
+                </Helmet>
+                <AboutPage />
+              </UserProvider>
+            </div>
+          }
+        />
+      </Routes>
     </Router>
   </React.StrictMode>,
   document.getElementById('root'),

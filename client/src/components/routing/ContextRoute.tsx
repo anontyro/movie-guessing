@@ -8,11 +8,11 @@ const ContextRoute = ({ contextComponent, component, ...rest }: any) => {
   return (
     <Route
       {...rest}
-      render={(props) => (
+      children={
         <Provider>
-          <Component {...props} />
+          <Component />
         </Provider>
-      )}
+      }
     />
   );
 };
