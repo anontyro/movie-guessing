@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Helmet } from 'react-helmet';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
 import HomePage from './pages/Home';
 import AboutPage from './pages/About';
-import ContextRoute from './components/routing/ContextRoute';
 import { UserProvider } from './context/user-context';
 import './App.css';
 
@@ -22,19 +22,31 @@ ReactDOM.render(
       <Route
         exact
         path="/"
-        render={(props) => (
+        children={
           <UserProvider>
+            <Helmet>
+              <title>Home</title>
+              <link
+                rel="canonical"
+                href="https://movie-guessing.alexwilkinson.co/"
+              />
+              <meta property="og:image" content="/public/logo192.png" />
+              <meta
+                property="og:description"
+                content="A simple movie guessing game allowing people to come together and try to guess the movies"
+              />
+            </Helmet>
             <HomePage />
           </UserProvider>
-        )}
+        }
       />
       <Route
         path="/about"
-        render={() => (
+        children={
           <UserProvider>
             <AboutPage />
           </UserProvider>
-        )}
+        }
       />
     </Router>
   </React.StrictMode>,
