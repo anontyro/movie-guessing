@@ -18,6 +18,7 @@ const MovieListDays = styled.div`
 `;
 
 const MovieListNextItem = styled.div`
+  position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -32,6 +33,12 @@ const MovieListNextItem = styled.div`
     }
     .main-movie-release-year {
       padding: 10px;
+    }
+    .skipped-day {
+      display: flex;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
     }
   }
 `;
@@ -57,7 +64,15 @@ const NextMovieList = styled(Segment)`
     min-width: 1000px;
   }
   .calendar-movies {
-    height: 180px;
+    height: 240px;
+  }
+  .control-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    > * {
+      width: 45%;
+    }
   }
 `;
 
@@ -104,6 +119,7 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
     const selectedMovies: StoredMovieItem[] = nextMovies.map((m) => ({
       ...m,
       completed: false,
+      isSkipped: false,
     }));
     return selectedMovies;
   };
@@ -118,8 +134,14 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
   };
 
   const randomiseMovies = (): void => {
-    const nextMovies = getNextWeekMovies();
-    setNextMovies(nextMovies);
+    const setNextSelection = getNextWeekMovies();
+    const currentMovies: StoredMovieItem[] = nextMovies.map((m) => {
+      if (!m.isSkipped && setNextSelection.length > 0) {
+        return setNextSelection.pop() as StoredMovieItem;
+      }
+      return m;
+    });
+    setNextMovies(currentMovies.length > 0 ? currentMovies : setNextSelection);
   };
 
   const getNextUniqueMovie = (currentMovies: MovieItem[]): MovieItem | null => {
@@ -160,10 +182,21 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
         currentMovies.splice(indexToReplace, 1, {
           ...nextMovie,
           completed: false,
+          isSkipped: false,
         });
         setNextMovies(currentMovies);
       }
     }
+  };
+
+  const setAsSkipped = (imdbId: string) => {
+    const index = nextMovies.findIndex((m) => m.imdbId === imdbId);
+    if (index === -1) {
+      return;
+    }
+
+    nextMovies[index].isSkipped = !nextMovies[index].isSkipped;
+    setNextMovies([...nextMovies]);
   };
 
   const toggleLock = () => {
@@ -225,50 +258,65 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
             <Grid.Column>Friday</Grid.Column>
           </Grid.Row>
           <Grid.Row className="calendar-movies" textAlign="center">
-            {nextMovies.length > 0 ? (
-              nextMovies.map((m) => (
-                <Grid.Column key={m.imdbId}>
-                  <MovieListNextItem
-                    onDrop={onDrop(m.imdbId)}
-                    onDragOver={onDragOver}
-                  >
-                    <div className="main-movie-section">
-                      <a
-                        className="main-movie-title"
-                        target="blank"
-                        href={m.imdbUrl}
-                      >
-                        {m.name}
-                      </a>
-                      <span className="main-movie-release-year">
-                        {m.releaseYear}
-                      </span>
-                    </div>
+            {nextMovies.map((m) => (
+              <Grid.Column key={m.imdbId}>
+                <MovieListNextItem
+                  onDrop={onDrop(m.imdbId)}
+                  onDragOver={onDragOver}
+                >
+                  <div className="main-movie-section">
+                    {m.isSkipped ? (
+                      <>
+                        <div className="skipped-day">
+                          <h2>Day Skipped</h2>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <a
+                          className="main-movie-title"
+                          target="blank"
+                          href={m.imdbUrl}
+                        >
+                          {m.name}
+                        </a>
+                        <span className="main-movie-release-year">
+                          {m.releaseYear}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  <div className="control-buttons">
                     <Button
-                      disabled={hasPersistedData}
+                      disabled={hasPersistedData || m.isSkipped}
                       onClick={() => reselectItem(m.imdbId)}
                       basic
                       color="blue"
+                      icon
                     >
-                      Reselect
+                      <Icon name="random" />
                     </Button>
-                    <UpdateMovieWithWinnerModal
-                      isOpen={isSubmitOpen}
-                      onOpen={() => {
-                        setIsSubmitOpen(true);
-                        setSelectedMovie(m);
-                      }}
-                      onClose={() => setIsSubmitOpen(false)}
-                      movie={selectedMovie}
-                    />
-                  </MovieListNextItem>
-                </Grid.Column>
-              ))
-            ) : (
-              <NoMovies>
-                <div className="no-movies-title">No Movies Selected</div>
-              </NoMovies>
-            )}
+                    <Button
+                      disabled={hasPersistedData}
+                      onClick={() => setAsSkipped(m.imdbId)}
+                      icon
+                      color="blue"
+                    >
+                      <Icon name={m.isSkipped ? 'play' : 'pause'} />
+                    </Button>
+                  </div>
+                  <UpdateMovieWithWinnerModal
+                    isOpen={isSubmitOpen}
+                    onOpen={() => {
+                      setIsSubmitOpen(true);
+                      setSelectedMovie(m);
+                    }}
+                    onClose={() => setIsSubmitOpen(false)}
+                    movie={selectedMovie}
+                  />{' '}
+                </MovieListNextItem>
+              </Grid.Column>
+            ))}
           </Grid.Row>
         </Grid>
       </NextMovieList>
@@ -299,8 +347,9 @@ const UpdateMovieWithWinnerModal: React.FC<UpdateMovieWithWinnerModalProps> = ({
           disabled={currentUser.apiToken.length === 0}
           color="green"
           basic
+          icon
         >
-          {currentUser.apiToken.length === 0 ? 'Token Required' : 'Set Winner'}
+          <Icon name="winner" />
         </Button>
       }
     >
