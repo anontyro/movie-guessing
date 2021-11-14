@@ -163,10 +163,10 @@ const MenuContainerMobileHide = styled(MenuContainer)`
 const MenuItem = styled(Link)`
   margin: 1rem;
   font-size: 1.7rem;
-  color: white;
+  color: gray;
   cursor: pointer;
   .active {
-    cursor: unset;
+    cursor: default;
     text-decoration: underline;
     color: blue;
   }

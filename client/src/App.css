@@ -27,6 +27,6 @@ html, body {
 }
 
 .active {
-  cursor: unset !important;
-  color: gray !important;
+  cursor: default !important;
+  color: white !important;
 }
