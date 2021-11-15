@@ -31,7 +31,10 @@ ReactDOM.render(
                     rel="canonical"
                     href="https://movie-guessing.alexwilkinson.co/"
                   />
-                  <meta property="og:image" content="/public/logo192.png" />
+                  <meta
+                    property="og:image"
+                    content="https://movie-guessing.alexwilkinson.co/logo192.png"
+                  />
                   <meta
                     property="og:description"
                     content="A simple movie guessing game allowing people to come together and try to guess the movies"
@@ -53,7 +56,10 @@ ReactDOM.render(
                     rel="canonical"
                     href="https://movie-guessing.alexwilkinson.co/about"
                   />
-                  <meta property="og:image" content="/public/logo192.png" />
+                  <meta
+                    property="og:image"
+                    content="https://movie-guessing.alexwilkinson.co/logo192.png"
+                  />
                   <meta
                     property="og:description"
                     content="Information about the stack used and a brief about what this is"
