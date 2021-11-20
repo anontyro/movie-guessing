@@ -128,7 +128,7 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
     const fromStorage = getMoviesFromStorage();
     if (fromStorage) {
       setHasPersistedData(true);
-      return fromStorage;
+      return fromStorage.storedMovies;
     }
     return getNextWeekMovies();
   };
@@ -207,7 +207,10 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
     }
 
     setHasPersistedData(true);
-    addMoviesToStorage(nextMovies);
+    addMoviesToStorage({
+      storedMovies: nextMovies,
+      startDate: new Date(),
+    });
   };
 
   useEffect(() => {
