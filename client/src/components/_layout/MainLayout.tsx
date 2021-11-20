@@ -217,13 +217,13 @@ const MainLayout: React.FC<Props> = ({ children }) => {
           <MainContainer>
             <MenuItem
               to="/"
-              className={location.pathname === '/' ? 'active' : ''}
+              className={location.pathname === '/' ? 'nav-active' : ''}
             >
               Home
             </MenuItem>
             <MenuItem
               to="/about"
-              className={location.pathname === '/about' ? 'active' : ''}
+              className={location.pathname === '/about' ? 'nav-active' : ''}
             >
               About
             </MenuItem>
