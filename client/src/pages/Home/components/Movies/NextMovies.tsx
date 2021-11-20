@@ -1,4 +1,5 @@
-import React, { DragEventHandler, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import DatePicker from 'react-datepicker';
 import MovieItem from '../../../../interfaces/MovieItem';
 import StoredMovieItem from '../../../../interfaces/StoredMovieItem';
 import {
@@ -11,6 +12,7 @@ import { Button, Icon, Segment, Grid, Modal, Form } from 'semantic-ui-react';
 import styled from '@emotion/styled';
 import { useUser } from '../../../../context/user-context';
 import * as dateFns from 'date-fns';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const MovieListDays = styled.div`
   text-align: center;
@@ -94,12 +96,14 @@ interface Props {
 }
 
 const NextMovies: React.FC<Props> = ({ movies }) => {
+  const currentDay = dateFns.format(new Date(), 'EEEE');
   const [nextMovies, setNextMovies] = useState<StoredMovieItem[]>([]);
   const [hasPersistedData, setHasPersistedData] = useState(false);
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<
     StoredMovieItem | undefined
   >(undefined);
+  const [startDate, setStartDate] = useState(new Date());
 
   const getNextWeekMovies = (): StoredMovieItem[] => {
     const nextMovies: MovieItem[] = [];
@@ -128,6 +132,7 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
     const fromStorage = getMoviesFromStorage();
     if (fromStorage) {
       setHasPersistedData(true);
+      setStartDate(new Date(fromStorage.startDate));
       return fromStorage.storedMovies;
     }
     return getNextWeekMovies();
@@ -209,7 +214,7 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
     setHasPersistedData(true);
     addMoviesToStorage({
       storedMovies: nextMovies,
-      startDate: new Date(),
+      startDate: startDate,
     });
   };
 
@@ -254,11 +259,31 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
       <NextMovieList>
         <Grid className="calendar-week" columns="equal">
           <Grid.Row as={MovieListDays}>
-            <Grid.Column>Monday</Grid.Column>
-            <Grid.Column>Tuesday</Grid.Column>
-            <Grid.Column>Wednesday</Grid.Column>
-            <Grid.Column>Thursday</Grid.Column>
-            <Grid.Column>Friday</Grid.Column>
+            <Grid.Column
+              className={currentDay === 'Monday' ? 'current-day' : ''}
+            >
+              Monday
+            </Grid.Column>
+            <Grid.Column
+              className={currentDay === 'Tuesday' ? 'current-day' : ''}
+            >
+              Tuesday
+            </Grid.Column>
+            <Grid.Column
+              className={currentDay === 'Wednesday' ? 'current-day' : ''}
+            >
+              Wednesday
+            </Grid.Column>
+            <Grid.Column
+              className={currentDay === 'Thursday' ? 'current-day' : ''}
+            >
+              Thursday
+            </Grid.Column>
+            <Grid.Column
+              className={currentDay === 'Friday' ? 'current-day' : ''}
+            >
+              Friday
+            </Grid.Column>
           </Grid.Row>
           <Grid.Row className="calendar-movies" textAlign="center">
             {nextMovies.map((m) => (
@@ -323,6 +348,16 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
           </Grid.Row>
         </Grid>
       </NextMovieList>
+      <Segment vertical>
+        <NextMovieHeader>
+          <span>Week Starting</span>
+          <DatePicker
+            readOnly={hasPersistedData ? true : false}
+            selected={startDate}
+            onChange={(date: any) => setStartDate(date)}
+          />
+        </NextMovieHeader>
+      </Segment>
     </Segment.Group>
   );
 };

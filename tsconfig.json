@@ -13,5 +13,6 @@
     "incremental": true,
     "jsx": "react"
   },
-  "exclude": ["client", "dist"]
+  "exclude": ["client", "dist"],
+  "include": ["src"]
 }

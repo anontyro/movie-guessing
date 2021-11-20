@@ -33,17 +33,6 @@ interface MovieStats {
   monthsLeft: number;
 }
 
-const getPageData = async (imdbId: string) => {
-  const url = `https://www.imdb.com/title/${imdbId}`;
-  const data = await fetch(url);
-  const text = await data.text();
-  const parser = new DOMParser();
-
-  const html = parser.parseFromString(text, 'text/html');
-
-  return html;
-};
-
 const HomePage = () => {
   const [currentUser, setCurrentUser] = useUser();
   const [apiData, setApiData]: [
@@ -81,7 +70,7 @@ const HomePage = () => {
         ...apiData,
         statistics: metadata,
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err.message);
     } finally {
       setIsLoading(false);
@@ -115,7 +104,7 @@ const HomePage = () => {
           }
         }
         setIsLoading(false);
-      } catch (err) {
+      } catch (err: any) {
         console.error(err.message);
       } finally {
         setIsLoading(false);
