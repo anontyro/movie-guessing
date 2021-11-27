@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build:prod": "yarn build && yarn copy-server && yarn build:client && yarn copy-client",
+    "build:prod": "yarn build && yarn copy-server && rm -rf ./dist && yarn build:client && yarn copy-client",
     "build": "npx @nestjs/cli build",
     "prod:server": "NODE_ENV=production node ./build/main.js",
     "build:dev": "yarn clean:dev && yarn copy-dev-assets && yarn ",
@@ -17,7 +17,7 @@
     "install:client": "cd ./client && yarn install",
     "clean": "rm -rf build && mkdir build",
     "copy-client": "cp -R ./client/build/. ./build/dist",
-    "copy-server": "cp -R ./dist/src/. ./build",
+    "copy-server": "cp -R ./dist/. ./build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "run-p server:start client:start",
