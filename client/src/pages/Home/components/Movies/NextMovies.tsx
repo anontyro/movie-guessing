@@ -8,7 +8,7 @@ import {
   getMoviesFromStorage,
 } from '../../../../utils/localStorage';
 import { randomIntFromInterval } from '../../../../utils/maths';
-import { Button, Icon, Segment, Grid } from 'semantic-ui-react';
+import { Button, Icon, Segment } from 'semantic-ui-react';
 import styled from '@emotion/styled';
 import 'react-datepicker/dist/react-datepicker.css';
 import { getNextMonday } from '../../../../utils/dateHelpers';

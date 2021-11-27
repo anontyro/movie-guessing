@@ -8,6 +8,8 @@ import StoredMovieItem from '../../../../../interfaces/StoredMovieItem';
 const MovieListDays = styled.div`
   text-align: center;
   background-color: #ccdeff;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 `;
 
 const MovieListNextItem = styled.div`
@@ -40,6 +42,22 @@ const NextMovieList = styled(Segment)`
   overflow-y: auto;
   .calendar-week {
     min-width: 1000px;
+    .movie-day {
+      color: gray;
+      &.current-day {
+        color: #0034ff;
+      }
+    }
+  }
+  .ui.grid > .row.calendar-movies {
+    padding: 0;
+
+    .column.movie-day-data {
+      padding: 10px;
+      &.current-day {
+        background-color: #ccdeff;
+      }
+    }
   }
   .calendar-movies {
     height: 240px;
@@ -53,6 +71,29 @@ const NextMovieList = styled(Segment)`
     }
   }
 `;
+
+const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+interface NextMovieHeadersProps {
+  currentDay: string;
+}
+
+const NextMovieDayHeaders: React.FC<NextMovieHeadersProps> = ({
+  currentDay,
+}) => {
+  return (
+    <Grid.Row as={MovieListDays}>
+      {WEEK_DAYS.map((day, index) => (
+        <Grid.Column
+          key={day + index}
+          className={`movie-day ${currentDay === day ? 'current-day' : ''}`}
+        >
+          {day}
+        </Grid.Column>
+      ))}
+    </Grid.Row>
+  );
+};
 
 interface DisplayNextProps {
   hasPersistedData: boolean;
@@ -91,32 +132,15 @@ const DisplayNext: React.FC<DisplayNextProps> = ({
   return (
     <NextMovieList>
       <Grid className="calendar-week" columns="equal">
-        <Grid.Row as={MovieListDays}>
-          <Grid.Column className={currentDay === 'Monday' ? 'current-day' : ''}>
-            Monday
-          </Grid.Column>
-          <Grid.Column
-            className={currentDay === 'Tuesday' ? 'current-day' : ''}
-          >
-            Tuesday
-          </Grid.Column>
-          <Grid.Column
-            className={currentDay === 'Wednesday' ? 'current-day' : ''}
-          >
-            Wednesday
-          </Grid.Column>
-          <Grid.Column
-            className={currentDay === 'Thursday' ? 'current-day' : ''}
-          >
-            Thursday
-          </Grid.Column>
-          <Grid.Column className={currentDay === 'Friday' ? 'current-day' : ''}>
-            Friday
-          </Grid.Column>
-        </Grid.Row>
+        <NextMovieDayHeaders currentDay={currentDay} />
         <Grid.Row className="calendar-movies" textAlign="center">
-          {nextMovies.map((m) => (
-            <Grid.Column key={m.imdbId}>
+          {nextMovies.map((m, i) => (
+            <Grid.Column
+              className={`movie-day-data ${
+                currentDay === WEEK_DAYS[i] ? 'current-day' : ''
+              }`}
+              key={m.imdbId}
+            >
               <MovieListNextItem
                 onDrop={onDrop(m.imdbId)}
                 onDragOver={onDragOver}
