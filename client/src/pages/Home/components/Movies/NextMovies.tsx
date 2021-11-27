@@ -13,6 +13,7 @@ import styled from '@emotion/styled';
 import { useUser } from '../../../../context/user-context';
 import * as dateFns from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
+import { getNextMonday } from '../../../../utils/dateHelpers';
 
 const MovieListDays = styled.div`
   text-align: center;
@@ -56,6 +57,23 @@ const NextMovieHeader = styled.div`
   @media (max-width: 600px) {
     .buttons {
       display: flex;
+    }
+  }
+`;
+
+const WeekStartingPicker = styled(NextMovieHeader)`
+  align-items: center;
+  .react-datepicker-wrapper {
+    display: flex;
+    width: auto;
+  }
+  .week-starting-date-picker {
+    border-radius: 5px;
+    padding: 5px;
+    text-align: center;
+    &.disabled {
+      color: #9ac7e9;
+      background-color: #e8e8e8;
     }
   }
 `;
@@ -147,6 +165,7 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
       return m;
     });
     setNextMovies(currentMovies.length > 0 ? currentMovies : setNextSelection);
+    setStartDate(getNextMonday(new Date()));
   };
 
   const getNextUniqueMovie = (currentMovies: MovieItem[]): MovieItem | null => {
@@ -348,15 +367,18 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
           </Grid.Row>
         </Grid>
       </NextMovieList>
-      <Segment vertical>
-        <NextMovieHeader>
-          <span>Week Starting</span>
+      <Segment vertical className="week-picker-container">
+        <WeekStartingPicker>
+          <span className="week-starting-title">Week Starting</span>
           <DatePicker
             readOnly={hasPersistedData ? true : false}
             selected={startDate}
             onChange={(date: any) => setStartDate(date)}
+            className={`${
+              hasPersistedData ? 'disabled' : ''
+            } week-starting-date-picker`}
           />
-        </NextMovieHeader>
+        </WeekStartingPicker>
       </Segment>
     </Segment.Group>
   );
