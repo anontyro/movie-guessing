@@ -1,5 +1,4 @@
-import StoredMovieItem from '../interfaces/StoredMovieItem';
-import * as dateFns from 'date-fns';
+import MoveListStore from '../interfaces/MovieListStore';
 
 const STORE_KEYS = {
   API_TOKEN: 'API_TOKEN',
@@ -41,12 +40,12 @@ const getFromLocalStorage = <T>(key: string): T | null => {
   return parseItems.items;
 };
 
-export const getMoviesFromStorage = (): StoredMovieItem[] | null =>
-  getFromLocalStorage<StoredMovieItem[]>(STORE_KEYS.MOVIES_THIS_WEEK);
+export const getMoviesFromStorage = (): MoveListStore | null =>
+  getFromLocalStorage<MoveListStore>(STORE_KEYS.MOVIES_THIS_WEEK);
 export const clearMovieStorage = () =>
   clearKeyFromLocalStorage(STORE_KEYS.MOVIES_THIS_WEEK);
-export const addMoviesToStorage = (movies: StoredMovieItem[]) =>
-  addToLocalStorage<StoredMovieItem[]>(movies, STORE_KEYS.MOVIES_THIS_WEEK);
+export const addMoviesToStorage = (movieList: MoveListStore) =>
+  addToLocalStorage<MoveListStore>(movieList, STORE_KEYS.MOVIES_THIS_WEEK);
 
 export const addTokenToStorage = (token: string) =>
   addToLocalStorage(token, STORE_KEYS.API_TOKEN);
