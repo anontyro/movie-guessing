@@ -8,43 +8,11 @@ import {
   getMoviesFromStorage,
 } from '../../../../utils/localStorage';
 import { randomIntFromInterval } from '../../../../utils/maths';
-import { Button, Icon, Segment, Grid, Modal, Form } from 'semantic-ui-react';
+import { Button, Icon, Segment, Grid } from 'semantic-ui-react';
 import styled from '@emotion/styled';
-import { useUser } from '../../../../context/user-context';
-import * as dateFns from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import { getNextMonday } from '../../../../utils/dateHelpers';
-
-const MovieListDays = styled.div`
-  text-align: center;
-  background-color: #ccdeff;
-`;
-
-const MovieListNextItem = styled.div`
-  position: relative;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  .main-movie-section {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    height: 80px;
-    overflow: hidden;
-    .main-movie-title {
-      flex-grow: 1;
-    }
-    .main-movie-release-year {
-      padding: 10px;
-    }
-    .skipped-day {
-      display: flex;
-      height: 100%;
-      justify-content: center;
-      align-items: center;
-    }
-  }
-`;
+import DisplayNext from './NextMovies/DisplayNext';
 
 const NextMovieHeader = styled.div`
   display: flex;
@@ -78,49 +46,14 @@ const WeekStartingPicker = styled(NextMovieHeader)`
   }
 `;
 
-const NextMovieList = styled(Segment)`
-  overflow-y: auto;
-  .calendar-week {
-    min-width: 1000px;
-  }
-  .calendar-movies {
-    height: 240px;
-  }
-  .control-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin: 10px 0;
-    > * {
-      width: 45%;
-    }
-  }
-`;
-
-const NoMovies = styled(Grid.Column)`
-  position: relative;
-  color: white;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.8);
-  .no-movies-title {
-  }
-`;
-
 interface Props {
   movies: MovieItem[];
 }
 
 const NextMovies: React.FC<Props> = ({ movies }) => {
-  const currentDay = dateFns.format(new Date(), 'EEEE');
   const [nextMovies, setNextMovies] = useState<StoredMovieItem[]>([]);
   const [hasPersistedData, setHasPersistedData] = useState(false);
-  const [isSubmitOpen, setIsSubmitOpen] = useState(false);
-  const [selectedMovie, setSelectedMovie] = useState<
-    StoredMovieItem | undefined
-  >(undefined);
+
   const [startDate, setStartDate] = useState(new Date());
 
   const getNextWeekMovies = (): StoredMovieItem[] => {
@@ -241,21 +174,6 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
     setNextMovies(setupNextMovies());
   }, []);
 
-  const onDrop = (id: string) => (event: any) => {
-    event.preventDefault();
-    const data = event.dataTransfer;
-    if (data) {
-      data.dropEffect = 'move';
-      const val = event.dataTransfer?.getData('text/plain');
-      reselectItem(id, val);
-    }
-  };
-
-  const onDragOver = (event: any) => {
-    event.preventDefault();
-    const data = event.dataTransfer?.getData('text/plain');
-  };
-
   return (
     <Segment.Group className="w-100">
       <Segment vertical>
@@ -275,98 +193,12 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
           </div>
         </NextMovieHeader>
       </Segment>
-      <NextMovieList>
-        <Grid className="calendar-week" columns="equal">
-          <Grid.Row as={MovieListDays}>
-            <Grid.Column
-              className={currentDay === 'Monday' ? 'current-day' : ''}
-            >
-              Monday
-            </Grid.Column>
-            <Grid.Column
-              className={currentDay === 'Tuesday' ? 'current-day' : ''}
-            >
-              Tuesday
-            </Grid.Column>
-            <Grid.Column
-              className={currentDay === 'Wednesday' ? 'current-day' : ''}
-            >
-              Wednesday
-            </Grid.Column>
-            <Grid.Column
-              className={currentDay === 'Thursday' ? 'current-day' : ''}
-            >
-              Thursday
-            </Grid.Column>
-            <Grid.Column
-              className={currentDay === 'Friday' ? 'current-day' : ''}
-            >
-              Friday
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row className="calendar-movies" textAlign="center">
-            {nextMovies.map((m) => (
-              <Grid.Column key={m.imdbId}>
-                <MovieListNextItem
-                  onDrop={onDrop(m.imdbId)}
-                  onDragOver={onDragOver}
-                >
-                  <div className="main-movie-section">
-                    {m.isSkipped ? (
-                      <>
-                        <div className="skipped-day">
-                          <h2>Day Skipped</h2>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <a
-                          className="main-movie-title"
-                          target="blank"
-                          href={m.imdbUrl}
-                        >
-                          {m.name}
-                        </a>
-                        <span className="main-movie-release-year">
-                          {m.releaseYear}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                  <div className="control-buttons">
-                    <Button
-                      disabled={hasPersistedData || m.isSkipped}
-                      onClick={() => reselectItem(m.imdbId)}
-                      basic
-                      color="blue"
-                      icon
-                    >
-                      <Icon name="random" />
-                    </Button>
-                    <Button
-                      disabled={hasPersistedData}
-                      onClick={() => setAsSkipped(m.imdbId)}
-                      icon
-                      color="blue"
-                    >
-                      <Icon name={m.isSkipped ? 'play' : 'pause'} />
-                    </Button>
-                  </div>
-                  <UpdateMovieWithWinnerModal
-                    isOpen={isSubmitOpen}
-                    onOpen={() => {
-                      setIsSubmitOpen(true);
-                      setSelectedMovie(m);
-                    }}
-                    onClose={() => setIsSubmitOpen(false)}
-                    movie={selectedMovie}
-                  />{' '}
-                </MovieListNextItem>
-              </Grid.Column>
-            ))}
-          </Grid.Row>
-        </Grid>
-      </NextMovieList>
+      <DisplayNext
+        hasPersistedData={hasPersistedData}
+        nextMovies={nextMovies}
+        reselectItem={reselectItem}
+        setAsSkipped={setAsSkipped}
+      />
       <Segment vertical className="week-picker-container">
         <WeekStartingPicker>
           <span className="week-starting-title">Week Starting</span>
@@ -381,70 +213,6 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
         </WeekStartingPicker>
       </Segment>
     </Segment.Group>
-  );
-};
-
-interface UpdateMovieWithWinnerModalProps {
-  movie?: StoredMovieItem;
-  onClose: any;
-  onOpen: any;
-  isOpen: boolean;
-}
-const UpdateMovieWithWinnerModal: React.FC<UpdateMovieWithWinnerModalProps> = ({
-  movie,
-  onClose,
-  onOpen,
-  isOpen,
-}) => {
-  const [currentUser, setCurrentUser] = useUser();
-  return (
-    <Modal
-      onClose={onClose}
-      onOpen={onOpen}
-      open={isOpen}
-      trigger={
-        <Button
-          disabled={currentUser.apiToken.length === 0}
-          color="green"
-          basic
-          icon
-        >
-          <Icon name="winner" />
-        </Button>
-      }
-    >
-      {movie && (
-        <>
-          <Modal.Header>Add Winner for {movie.name}</Modal.Header>
-          <Modal.Content>
-            <Form>
-              <Form.Field>
-                <label htmlFor="">Winners Name</label>
-                <input type="text" placeholder="winners name" />
-              </Form.Field>
-              <Form.Field>
-                <label htmlFor="">Date Guessed</label>
-                <input
-                  disabled
-                  value={dateFns.format(new Date(), 'yyyy-MM-dd')}
-                />
-              </Form.Field>
-            </Form>
-          </Modal.Content>
-          <Modal.Actions>
-            <Button color="black" onClick={onClose}>
-              Close
-            </Button>
-            <Button
-              content="Update Winner"
-              labelPosition="right"
-              icon="checkmark"
-              positive
-            />
-          </Modal.Actions>
-        </>
-      )}
-    </Modal>
   );
 };
 
