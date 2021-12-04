@@ -244,7 +244,10 @@ const MainLayout: React.FC<Props> = ({ children }) => {
             >
               <Icon link name="facebook" size="big" />
             </Menu.Item>
-            <Menu.Item href="https://github.com/anontyro" target="_blank">
+            <Menu.Item
+              href="https://github.com/anontyro/movie-guessing"
+              target="_blank"
+            >
               <Icon link name="github square" size="big" />
             </Menu.Item>
             <Menu.Item
