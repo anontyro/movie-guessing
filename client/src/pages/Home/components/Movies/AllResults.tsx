@@ -17,26 +17,57 @@ import {
   DropdownProps,
 } from 'semantic-ui-react';
 import styled from '@emotion/styled';
-import BaseCard from '../../../../components/Cards/BaseCard';
+import BaseCard from '../../../../components/Cards/BaseCard/index';
 import { getMostRecentDecades } from '../../../../utils/maths';
+import mediaQueries from '../../../../consts/mediaQueries';
+import { addEllipsis } from '../../../../utils/textHelpers';
 
-const MainResultContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  height: 50vh;
-  overflow-y: auto;
-  justify-content: center;
+const MovieCardHeader = styled.div`
+  font-size: 1.3rem;
+  font-weight: bold;
+  padding: 0.2rem 0;
 `;
 
-const ResultsMetaContainer = styled.div`
+const MovieCardContent = styled.div`
   display: flex;
+  align-items: last baseline;
   justify-content: space-between;
+  color: #a5a5a5;
+  height: 100%;
+`;
+
+const MainContainer = styled.div`
+  height: 50vh;
+  overflow-y: auto;
+`;
+
+const MainResultContainer = styled.div`
+  ${mediaQueries.sm} {
+    grid-template-columns: 1fr 1fr;
+  }
+  ${mediaQueries.md} {
+    grid-template-columns: 1fr 1fr;
+  }
+  ${mediaQueries.lg} {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  ${mediaQueries.xl} {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+  max-height: 100%;
+  overflow-y: auto;
+  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 1rem;
+  row-gap: 1rem;
+  padding-right: 1rem;
 `;
 
 const MovieFilterContainer = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 10px 0;
 `;
 
 const MovieFilterRow = styled.div`
@@ -191,31 +222,43 @@ const AllResults: React.FC<Props> = ({
       </Accordion.Title>
       <Accordion.Content active={isActive}>
         <MovieFilter movies={movies} setFilteredMovies={setFilteredMovies} />
-        <MainResultContainer>
-          {filteredMovies.map((movie) => (
-            <BaseCard key={movie.imdbId} dragStart={onDragStart(movie.imdbId)}>
-              <Card.Content>
-                <Card.Header>
-                  <a target="blank" href={movie.imdbUrl}>
-                    {movie.name}
-                  </a>
-                </Card.Header>
-                <Card.Meta>
-                  <ResultsMetaContainer>
-                    {movie.releaseYear}
-                    <Icon
-                      name={
-                        movie.hasBeenGuessed
-                          ? 'check circle outline'
-                          : 'circle outline'
-                      }
-                    />
-                  </ResultsMetaContainer>
-                </Card.Meta>
-              </Card.Content>
-            </BaseCard>
-          ))}
-        </MainResultContainer>
+        <MainContainer>
+          <MainResultContainer>
+            {filteredMovies.map((movie) => (
+              <BaseCard
+                draggable
+                key={movie.imdbId}
+                dragStart={onDragStart(movie.imdbId)}
+              >
+                {{
+                  header: (
+                    <MovieCardHeader>
+                      <a
+                        href={movie.imdbUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {addEllipsis(movie.name, 50)}
+                      </a>
+                    </MovieCardHeader>
+                  ),
+                  content: (
+                    <MovieCardContent>
+                      <span>{movie.releaseYear}</span>
+                      <Icon
+                        name={
+                          movie.hasBeenGuessed
+                            ? 'check circle outline'
+                            : 'circle outline'
+                        }
+                      />
+                    </MovieCardContent>
+                  ),
+                }}
+              </BaseCard>
+            ))}
+          </MainResultContainer>
+        </MainContainer>
       </Accordion.Content>
     </Accordion>
   );
