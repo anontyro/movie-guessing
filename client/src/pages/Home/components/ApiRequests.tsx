@@ -1,8 +1,7 @@
 import React from 'react';
-import { User, useUser } from '../../../context/user-context';
-import styled from '@emotion/styled';
+import { User } from '../../../context/user-context';
 import { Button, Card, Header, Icon, Divider } from 'semantic-ui-react';
-import BaseCard from '../../../components/Cards/BaseCard';
+import ApiCard from '../../../components/Cards/ApiCard';
 import MOVIE_ROUTES from '../../../consts/movieRoutes';
 
 interface PropsApiRequests {
@@ -25,7 +24,7 @@ const ApiRequests: React.FC<PropsApiRequests> = ({
         </Header>
       </Divider>
       <Card.Group>
-        <BaseCard>
+        <ApiCard>
           <>
             <Card.Content>
               <Card.Header>Get Next Movies</Card.Header>
@@ -48,8 +47,8 @@ const ApiRequests: React.FC<PropsApiRequests> = ({
               </div>
             </Card.Content>
           </>
-        </BaseCard>
-        <BaseCard isDimmed={currentUser.apiToken.length === 0}>
+        </ApiCard>
+        <ApiCard isDimmed={currentUser.apiToken.length === 0}>
           <>
             <Card.Content>
               <Card.Header>Get All Movies</Card.Header>
@@ -71,7 +70,7 @@ const ApiRequests: React.FC<PropsApiRequests> = ({
               </div>
             </Card.Content>
           </>
-        </BaseCard>
+        </ApiCard>
       </Card.Group>
     </>
   );

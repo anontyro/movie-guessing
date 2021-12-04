@@ -206,6 +206,7 @@ const NextMovies: React.FC<Props> = ({ movies }) => {
             readOnly={hasPersistedData ? true : false}
             selected={startDate}
             onChange={(date: any) => setStartDate(date)}
+            dateFormat="dd/MM/yyyy"
             className={`${
               hasPersistedData ? 'disabled' : ''
             } week-starting-date-picker`}
