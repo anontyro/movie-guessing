@@ -23,13 +23,17 @@ interface ApiCardProps {
   dragStart?: (event: React.DragEvent<HTMLDivElement>) => any;
 }
 
-const BaseCard: React.FC<ApiCardProps> = ({
+const ApiCard: React.FC<ApiCardProps> = ({
   children,
   isDimmed = false,
   dragStart = (event: React.DragEvent<HTMLDivElement>) => {},
 }) => {
   return (
-    <CardContainer draggable="true" onDragStart={dragStart}>
+    <CardContainer
+      className="base-card"
+      draggable="true"
+      onDragStart={dragStart}
+    >
       <Dimmer.Dimmable as={Card} dimmed={isDimmed}>
         {children}
         <Dimmer active={isDimmed}>
@@ -43,4 +47,4 @@ const BaseCard: React.FC<ApiCardProps> = ({
   );
 };
 
-export default BaseCard;
+export default ApiCard;
